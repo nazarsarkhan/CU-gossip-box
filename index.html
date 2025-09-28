@@ -60,11 +60,10 @@
       top: clamp(12px, 3vh, 28px);
       align-self: flex-end;
       margin-inline: auto 0;
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 16px;
       align-items: stretch;
-      justify-content: center;
       background: var(--glass);
       border: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
       border-radius: 18px;
@@ -87,7 +86,7 @@
       white-space: normal;
       min-width: 0;
       padding: 6px 0;
-      flex: 1 1 210px;
+      width: 100%;
     }
     .floating-controls .control-icon {
       display: inline-flex;
@@ -105,7 +104,7 @@
       background: color-mix(in srgb, var(--acc) 32%, transparent);
       color: #f6fbff;
     }
-    .floating-controls .control-body { display:flex; flex-direction:column; gap:6px; flex:1; min-width:0; }
+    .floating-controls .control-body { display:flex; flex-direction:column; gap:6px; flex:1; min-width:0; align-items:flex-start; }
     .floating-controls .control-label {
       font-size: 12px;
       font-weight: 600;
@@ -173,7 +172,6 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      overflow: hidden;
       display: flex;
       flex-direction: column;
       margin: 0 auto;
@@ -193,7 +191,29 @@
       border: 1px solid color-mix(in srgb, var(--border) 78%, transparent); border-radius: 14px; padding: 14px 16px; font: inherit; outline: none;
       transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
     }
-    textarea { resize: vertical; min-height: 140px; max-height: min(520px, 70vh); }
+    textarea {
+      resize: vertical;
+      min-height: 140px;
+      max-height: none;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: color-mix(in srgb, var(--acc) 35%, transparent) color-mix(in srgb, var(--border) 65%, transparent);
+    }
+    textarea::-webkit-scrollbar {
+      width: 10px;
+    }
+    textarea::-webkit-scrollbar-track {
+      background: color-mix(in srgb, var(--card) 88%, rgba(0,0,0,.04));
+      border-radius: 12px;
+    }
+    textarea::-webkit-scrollbar-thumb {
+      background: color-mix(in srgb, var(--acc) 35%, rgba(0,0,0,.18));
+      border-radius: 12px;
+      border: 2px solid var(--card);
+    }
+    textarea::-webkit-scrollbar-thumb:hover {
+      background: color-mix(in srgb, var(--acc) 55%, rgba(0,0,0,.18));
+    }
     input[type="text"]:focus, textarea:focus { border-color: color-mix(in srgb, var(--acc) 80%, white 20%); box-shadow: 0 0 0 3px color-mix(in srgb, var(--acc) 18%, transparent); background: color-mix(in srgb, var(--card) 90%, rgba(255,255,255,.92)); }
 
     .row { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
@@ -231,10 +251,24 @@
     }
     @media (max-width: 640px) {
       body { padding: clamp(16px, 5vh, 32px) clamp(12px, 5vw, 20px); }
-      .floating-controls { position: static; top: auto; gap: 14px; border-radius: 20px; }
-      .floating-controls .control { flex: 1 1 100%; }
+      .floating-controls { position: static; top: auto; gap: 14px; border-radius: 20px; grid-template-columns: 1fr; }
+      .floating-controls .control { flex-direction: column; align-items: stretch; gap: 10px; }
+      .floating-controls .control-body { align-items: flex-start; }
+      .floating-controls .control-label { text-align: left; }
+      .floating-controls select {
+        text-align: left;
+        text-align-last: left;
+        font-size: 14px;
+        padding-inline: 14px 44px;
+      }
+      .floating-controls select option { text-align: left; }
+      .floating-controls .control-icon { width: 32px; height: 32px; font-size: 15px; }
       form { padding: 0 16px 24px; }
       footer { padding: 18px 16px 22px; flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 420px) {
+      .floating-controls { padding: 16px; }
+      .floating-controls select { min-height: 48px; }
     }
   </style>
 </head>
