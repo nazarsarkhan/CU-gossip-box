@@ -8,12 +8,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* THEME TOKENS */
+    /* ======================== THEME TOKENS ======================== */
     :root {
       --radius: 16px;
       --shadow: 0 14px 36px rgba(16,33,59,.14);
 
-      /* Light defaults */
+      /* Light */
       --bg: #f2f6fb;
       --card: #ffffff;
       --text: #13223d;
@@ -23,7 +23,7 @@
       --acc-2: #db4e3d;
       --glass: rgba(255,255,255,.82);
     }
-    /* Dark theme overrides */
+    /* Dark overrides */
     .theme-dark {
       --bg: #0f1628;
       --card: #141d33;
@@ -37,7 +37,8 @@
     }
 
     * { box-sizing: border-box; }
-    html, body { height: 100%; }
+    html, body { min-height: 100%; }
+    html { background-color: var(--bg); }
     body {
       margin: 0;
       padding: clamp(18px, 6vh, 48px) clamp(16px, 4vw, 48px);
@@ -45,25 +46,24 @@
       background: radial-gradient(circle at 20% -10%, rgba(0,140,226,.16), transparent 45%),
                   radial-gradient(circle at 85% 10%, rgba(219,78,61,.12), transparent 42%),
                   var(--bg);
+      background-repeat: no-repeat;
       color: var(--text);
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
       align-items: center;
       gap: clamp(18px, 4vh, 28px);
-      min-height: 100vh;
+      min-height: 100dvh;
       transition: background .3s ease;
     }
 
+    /* ======================== TOP CONTROLS ======================== */
     .floating-controls {
-      position: sticky;
-      top: clamp(12px, 3vh, 28px);
-      align-self: flex-end;
-      margin-inline: auto 0;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
+      align-self: center;
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
       align-items: stretch;
+      gap: 12px 16px;
       background: var(--glass);
       border: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
       border-radius: 18px;
@@ -71,29 +71,28 @@
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       box-shadow: 0 12px 30px rgba(19,34,61,.12);
-      z-index: 5;
-      max-width: min(460px, 100%);
+      z-index: 1000;
+      max-width: min(560px, 100%);
       width: 100%;
       isolation: isolate;
-      overflow: hidden;
+      overflow: visible; /* keep dropdowns visible */
     }
+
     .floating-controls .control {
       display: flex;
       align-items: center;
       gap: 14px;
       font-size: 13px;
       color: var(--muted);
-      white-space: normal;
       min-width: 0;
       padding: 6px 0;
-      width: 100%;
+      flex: 0 1 260px; /* two items in a row when possible */
     }
     .floating-controls .control-icon {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
+      width: 36px; height: 36px;
       border-radius: 50%;
       background: color-mix(in srgb, var(--acc) 18%, transparent);
       color: var(--acc);
@@ -105,33 +104,36 @@
       color: #f6fbff;
     }
     .floating-controls .control-body { display:flex; flex-direction:column; gap:6px; flex:1; min-width:0; align-items:flex-start; }
-    .floating-controls .control-label {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-align: left;
+    .floating-controls .control-label { font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+
+    /* Select: keep value centered on the button, avoid text jump on focus */
+    .floating-controls .select-wrap { max-width: 240px; margin-inline: auto; position: relative; width: 100%; color: var(--muted); }
+    .theme-dark .floating-controls .select-wrap { color: rgba(246,251,255,.7); }
+    .floating-controls .select-wrap::after {
+      content: '';
+      position: absolute; right: 14px; top: 50%; width: 10px; height: 6px; margin-top: -3px; background: currentColor;
+      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.75 6 6.25 11 1.75" stroke="%23000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>') center/contain no-repeat;
+      opacity: .6; pointer-events: none; transition: opacity .18s ease, transform .18s ease;
     }
+    .floating-controls .select-wrap:focus-within::after { opacity: .9; transform: translateY(-2px); }
+
     .floating-controls select {
-      appearance:none;
+      --pl: 16px;           /* left padding */
+      --pr: 40px;           /* space for arrow on the right */
+      appearance: none;
       border: none;
       background: linear-gradient(135deg, color-mix(in srgb, rgba(255,255,255,.94) 88%, var(--acc) 12%), rgba(255,255,255,.94));
       color: var(--text);
       border-radius: 14px;
-      padding: 11px 40px 11px 16px;
-      font: inherit;
-      font-weight: 600;
+      padding: 11px var(--pr) 11px var(--pl);
+      text-align: center;
+      text-align-last: center;
+      text-indent: calc((var(--pr) - var(--pl)) / 2); /* compensate asymmetric paddings */
+      font: inherit; font-weight: 600;
       cursor: pointer;
       box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 70%, transparent);
       transition: box-shadow .18s ease, background .18s ease, color .18s ease, transform .18s ease;
-      position: relative;
-      text-align: center;
-      text-align-last: center;
-      width: 100%;
-      min-height: 44px;
-      display: block;
-      line-height: 1.25;
+      width: 100%; min-height: 44px; display: block; line-height: 1.25;
     }
     .floating-controls select:hover {
       box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--acc) 30%, var(--border));
@@ -143,28 +145,19 @@
       box-shadow: inset 0 0 0 2px rgba(0,140,226,.45);
       transform: translateY(-1px);
     }
-    .floating-controls .select-wrap { position: relative; width: 100%; color: var(--muted); }
-    .theme-dark .floating-controls .select-wrap { color: rgba(246,251,255,.7); }
-    .floating-controls .select-wrap::after {
-      content: '';
-      position: absolute; right: 14px; top: 50%; width: 10px; height: 6px; margin-top: -3px; background: currentColor;
-      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.75 6 6.25 11 1.75" stroke="%23000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>') center/contain no-repeat;
-      opacity: .6; pointer-events: none; transition: opacity .18s ease, transform .18s ease;
-    }
-    .floating-controls .select-wrap:focus-within::after { opacity: .9; transform: translateY(-2px); }
     .floating-controls select option { background: var(--card); color: var(--text); font-weight: 600; padding: 10px 12px; text-align: center; }
+
     .theme-dark .floating-controls select {
       background: linear-gradient(135deg, color-mix(in srgb, rgba(20,29,51,.92) 88%, rgba(58,169,255,.16) 12%), rgba(20,29,51,.92));
       box-shadow: inset 0 0 0 1px color-mix(in srgb, rgba(151,167,201,.7) 70%, transparent);
     }
-    .theme-dark .floating-controls select:hover {
-      background: linear-gradient(135deg, color-mix(in srgb, rgba(20,29,51,.92) 74%, rgba(58,169,255,.26) 26%), rgba(20,29,51,.92));
-    }
+    .theme-dark .floating-controls select:hover { background: linear-gradient(135deg, color-mix(in srgb, rgba(20,29,51,.92) 74%, rgba(58,169,255,.26) 26%), rgba(20,29,51,.92)); }
     .theme-dark .floating-controls select option { background: rgba(20,29,51,.92); color: var(--text); }
     .theme-dark .floating-controls { box-shadow: 0 14px 34px rgba(0,0,0,.45); }
 
     .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
+    /* ======================== LAYOUT ======================== */
     .container {
       width: min(760px, 100%);
       max-width: 760px;
@@ -177,13 +170,13 @@
       margin: 0 auto;
     }
 
-    header { padding: clamp(20px, 4vw, 32px); display:flex; align-items:center; gap: clamp(12px, 3vw, 24px); justify-content:flex-start; }
+    header { padding: clamp(20px, 4vw, 32px); display:flex; align-items:center; gap: clamp(12px, 3vw, 24px); }
     .brand-left { display:flex; align-items:center; gap: clamp(10px, 2vw, 18px); }
     .logo { width: clamp(96px, 22vw, 132px); height: auto; display:block; }
     .title { margin: 0; font-size: clamp(20px, 2.6vw, 26px); font-weight: 700; letter-spacing: .2px; }
     .subtitle { margin: 6px 0 0; color: var(--muted); font-size: clamp(13px, 2vw, 15px); }
 
-    form { padding: 0 clamp(20px, 4vw, 32px) clamp(24px, 5vw, 40px); flex:1; display:flex; flex-direction:column; }
+    form { padding: 0 clamp(20px, 4vw, 32px) clamp(24px, 5vw, 40px); display:flex; flex-direction:column; }
     .field { margin: 14px 0 0; }
     label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
     input[type="text"], textarea {
@@ -191,29 +184,11 @@
       border: 1px solid color-mix(in srgb, var(--border) 78%, transparent); border-radius: 14px; padding: 14px 16px; font: inherit; outline: none;
       transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
     }
-    textarea {
-      resize: vertical;
-      min-height: 140px;
-      max-height: none;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: color-mix(in srgb, var(--acc) 35%, transparent) color-mix(in srgb, var(--border) 65%, transparent);
-    }
-    textarea::-webkit-scrollbar {
-      width: 10px;
-    }
-    textarea::-webkit-scrollbar-track {
-      background: color-mix(in srgb, var(--card) 88%, rgba(0,0,0,.04));
-      border-radius: 12px;
-    }
-    textarea::-webkit-scrollbar-thumb {
-      background: color-mix(in srgb, var(--acc) 35%, rgba(0,0,0,.18));
-      border-radius: 12px;
-      border: 2px solid var(--card);
-    }
-    textarea::-webkit-scrollbar-thumb:hover {
-      background: color-mix(in srgb, var(--acc) 55%, rgba(0,0,0,.18));
-    }
+    textarea { resize: vertical; min-height: 140px; max-height: min(68vh, 560px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--acc) 35%, transparent) color-mix(in srgb, var(--border) 65%, transparent); }
+    textarea::-webkit-scrollbar { width: 10px; }
+    textarea::-webkit-scrollbar-track { background: color-mix(in srgb, var(--card) 88%, rgba(0,0,0,.04)); border-radius: 12px; }
+    textarea::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--acc) 35%, rgba(0,0,0,.18)); border-radius: 12px; border: 2px solid var(--card); }
+    textarea::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--acc) 55%, rgba(0,0,0,.18)); }
     input[type="text"]:focus, textarea:focus { border-color: color-mix(in srgb, var(--acc) 80%, white 20%); box-shadow: 0 0 0 3px color-mix(in srgb, var(--acc) 18%, transparent); background: color-mix(in srgb, var(--card) 90%, rgba(255,255,255,.92)); }
 
     .row { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
@@ -245,24 +220,16 @@
     .links a { color: var(--muted); text-decoration: none; font-size: 12px; }
     .links a:hover { text-decoration: underline; }
 
+    /* ======================== RESPONSIVE ======================== */
     @media (max-width: 900px) {
       body { align-items: stretch; }
-      .floating-controls { margin-inline: 0; align-self: stretch; max-width: 100%; }
+      .floating-controls { margin-inline: auto; max-width: 100%; }
     }
     @media (max-width: 640px) {
       body { padding: clamp(16px, 5vh, 32px) clamp(12px, 5vw, 20px); }
-      .floating-controls { position: static; top: auto; gap: 14px; border-radius: 20px; grid-template-columns: 1fr; }
-      .floating-controls .control { flex-direction: column; align-items: stretch; gap: 10px; }
-      .floating-controls .control-body { align-items: flex-start; }
-      .floating-controls .control-label { text-align: left; }
-      .floating-controls select {
-        text-align: left;
-        text-align-last: left;
-        font-size: 14px;
-        padding-inline: 14px 44px;
-      }
-      .floating-controls select option { text-align: left; }
-      .floating-controls .control-icon { width: 32px; height: 32px; font-size: 15px; }
+      .floating-controls { gap: 14px; border-radius: 20px; justify-content: center; }
+      .floating-controls .control { flex: 1 1 100%; }
+      .floating-controls select { text-align: left; text-align-last: left; font-size: 14px; }
       form { padding: 0 16px 24px; }
       footer { padding: 18px 16px 22px; flex-direction: column; align-items: flex-start; }
     }
@@ -346,30 +313,38 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script>
-    
-    // ===== THEME =====
+    // ======================== THEME ========================
     const root = document.documentElement;
     const THEME_KEY = 'gossip.theme';
     const themeSel = document.getElementById('themeSel');
     const themeIcon = document.getElementById('themeIcon');
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    function resolveTheme(mode){ return mode === 'auto' ? (mediaQuery.matches ? 'dark' : 'light') : mode; }
-    function applyTheme(mode){
+
+    // Returns the concrete theme to apply when "auto" is selected
+    const resolveTheme = (mode) => (mode === 'auto' ? (mediaQuery.matches ? 'dark' : 'light') : mode);
+
+    function applyTheme(mode) {
       const resolved = resolveTheme(mode);
       root.classList.toggle('theme-dark', resolved === 'dark');
       root.dataset.mode = resolved;
       root.setAttribute('data-theme', mode);
       root.setAttribute('data-theme-resolved', resolved);
       themeSel.value = mode;
-      if(themeIcon){ themeIcon.textContent = mode === 'auto' ? '🌓' : (resolved === 'dark' ? '🌙' : '☀️'); }
+      themeIcon.textContent = mode === 'auto' ? '🌓' : (resolved === 'dark' ? '🌙' : '☀️');
     }
+
     let theme = localStorage.getItem(THEME_KEY) || 'auto';
     applyTheme(theme);
-    themeSel.addEventListener('change', () => { theme = themeSel.value; localStorage.setItem(THEME_KEY, theme); applyTheme(theme); });
-    const syncSystemTheme = () => { if(theme === 'auto') applyTheme('auto'); };
-    if(mediaQuery.addEventListener){ mediaQuery.addEventListener('change', syncSystemTheme); } else if(mediaQuery.addListener){ mediaQuery.addListener(syncSystemTheme); }
+    themeSel.addEventListener('change', () => {
+      theme = themeSel.value;
+      localStorage.setItem(THEME_KEY, theme);
+      applyTheme(theme);
+    });
+    const syncSystemTheme = () => { if (theme === 'auto') applyTheme('auto'); };
+    (mediaQuery.addEventListener ? mediaQuery.addEventListener('change', syncSystemTheme)
+                                 : mediaQuery.addListener && mediaQuery.addListener(syncSystemTheme));
 
-    // ===== I18N =====
+    // ======================== I18N ========================
     const dict = {
       en: { title:'Anonymous submission', subtitle:'Write your story. Moderators will review it and post to the channel.', labelMessage:'Message text', rules:'By sending, you confirm you do not include personal data.', consent:'I agree to the rules and understand my message goes to moderation and can be rejected.', send:'Send to moderation', clear:'Clear form', note:'Minimum 10 characters. Submissions with personal data will be rejected.', rulesLink:'Rules', channel:'Our channel', faqHint:'Add a Rules/FAQ page', channelHint:'Add a link to your Telegram channel', theme:'Theme', themeLabel:'Theme', themeAuto:'Auto', themeLight:'Light', themeDark:'Dark', langLabel:'Language', langRu:'Russian', langEn:'English', toastPII:'It looks like there is personal data (phone/email/links). Remove it and try again.', toastOk:'Done! Your submission was sent for moderation.', toastErr:'Failed to send. Try again later.' },
       ru: { title:'Анонимная отправка', subtitle:'Напишите историю. Модераторы проверят и опубликуют в канале.', labelMessage:'Текст сообщения', rules:'Отправляя, вы подтверждаете, что не публикуете персональные данные.', consent:'Я согласен(на) с правилами и понимаю, что сообщение пойдёт на модерацию и может быть отклонено.', send:'Отправить на модерацию', clear:'Очистить форму', note:'Минимум 10 символов. Сообщения с персональными данными будут отклонены.', rulesLink:'Правила', channel:'Наш канал', faqHint:'Добавьте страницу с правилами/FAQ', channelHint:'Добавьте ссылку на телеграм‑канал', theme:'Тема', themeLabel:'Тема', themeAuto:'Авто', themeLight:'Светлая', themeDark:'Тёмная', langLabel:'Язык', langRu:'Русский', langEn:'English', toastPII:'Похоже, есть личные данные (телефон/почта/ссылки). Уберите их и попробуйте снова.', toastOk:'Готово! Заявка отправлена на модерацию.', toastErr:'Не удалось отправить. Попробуйте позже.' }
@@ -377,58 +352,92 @@
     const LANG_KEY = 'gossip.lang';
     const DEFAULT_LANG = 'en';
     const langSel = document.getElementById('lang');
+
     const i18n = {
-      get lang(){ return this._lang; }, set lang(v){ this._lang = v; },
-      t(k){ return (dict[this.lang] && dict[this.lang][k]) || k; },
-      apply(){
+      get lang() { return this._lang; },
+      set lang(v) { this._lang = v; },
+      t(k) { return (dict[this.lang] && dict[this.lang][k]) || k; },
+      apply() {
         document.documentElement.lang = this.lang;
-        document.querySelectorAll('[data-i18n]').forEach(el=>{
+        // Replace text for any element marked with data-i18n
+        document.querySelectorAll('[data-i18n]').forEach(el => {
           const key = el.getAttribute('data-i18n');
-          if(!key) return;
-          if(key === 'clear') { el.innerHTML = `<span>${this.t('clear')}</span>`; return; }
+          if (!key) return;
+          if (key === 'clear') { el.innerHTML = `<span>${this.t('clear')}</span>`; return; }
           el.textContent = this.t(key);
         });
-        document.getElementById('message').setAttribute('placeholder', this.lang==='ru' ? 'Без ФИО, телефонов и адресов' : 'No names, phone numbers or addresses');
-        // update select option texts
-        langSel.querySelector('[value="en"]').textContent = this.t('langEn');
-        langSel.querySelector('[value="ru"]').textContent = this.t('langRu');
-        themeSel.querySelector('[value="auto"]').textContent = this.t('themeAuto');
-        themeSel.querySelector('[value="light"]').textContent = this.t('themeLight');
-        themeSel.querySelector('[value="dark"]').textContent = this.t('themeDark');
+        // Update placeholder based on current language
+        document.getElementById('message').setAttribute('placeholder', this.lang === 'ru' ? 'Без ФИО, телефонов и адресов' : 'No names, phone numbers or addresses');
       }
     };
+
     const storedLang = localStorage.getItem(LANG_KEY);
     const initialLang = dict[storedLang] ? storedLang : DEFAULT_LANG;
     i18n.lang = initialLang; langSel.value = initialLang; i18n.apply();
-    langSel.addEventListener('change', ()=>{ i18n.lang = langSel.value; localStorage.setItem(LANG_KEY, i18n.lang); i18n.apply(); });
+    langSel.addEventListener('change', () => { i18n.lang = langSel.value; localStorage.setItem(LANG_KEY, i18n.lang); i18n.apply(); });
 
-    // ===== FORM LOGIC =====
+    // ======================== FORM LOGIC ========================
     const form = document.getElementById('form');
     const textarea = document.getElementById('message');
     const counter = document.getElementById('counter');
     const agree = document.getElementById('agree');
     const submitBtn = document.getElementById('submitBtn');
     const toast = document.getElementById('toast');
+
     const ENDPOINT = '/api/submit';
+    const MIN_LEN = +textarea.getAttribute('minlength') || 10;
+    const MAX_LEN = +textarea.getAttribute('maxlength') || 2000;
 
-    function updateState(){ const len = textarea.value.length; counter.textContent = `${len} / 2000`; const ok = len >= 10 && len <= 2000 && agree.checked; submitBtn.disabled = !ok; }
-    textarea.addEventListener('input', updateState); agree.addEventListener('change', updateState); form.addEventListener('reset', () => { setTimeout(() => { textarea.focus(); updateState(); }, 0); });
+    // Update UI state: length counter + submit availability
+    function updateState() {
+      const len = textarea.value.length;
+      counter.textContent = `${len} / ${MAX_LEN}`;
+      const ok = len >= MIN_LEN && len <= MAX_LEN && agree.checked;
+      submitBtn.disabled = !ok;
+    }
+    textarea.addEventListener('input', updateState);
+    agree.addEventListener('change', updateState);
+    form.addEventListener('reset', () => { setTimeout(() => { textarea.focus(); updateState(); }, 0); });
 
-    function showToast(msg, type='success'){ toast.className = `toast ${type}`; toast.dataset.show = 'true'; toast.innerHTML = `<p>${msg}</p>`; setTimeout(()=>{ toast.dataset.show='false'; }, 4500); }
+    function showToast(message, type = 'success') {
+      toast.className = `toast ${type}`;
+      toast.dataset.show = 'true';
+      toast.innerHTML = `<p>${message}</p>`;
+      setTimeout(() => { toast.dataset.show = 'false'; }, 4500);
+    }
 
     form.addEventListener('submit', async (e) => {
-      e.preventDefault(); submitBtn.disabled = true;
+      e.preventDefault();
+      submitBtn.disabled = true;
+
+      // Simple PII guard: phones, emails, Telegram handles/links
       const risky = /(\+?\d[\d\s\-()]{8,})|([\w.+-]+@[\w-]+\.[a-z]{2,})|(t\.me\/)/i;
-      if (risky.test(textarea.value)) { showToast(i18n.t('toastPII'), 'error'); submitBtn.disabled = false; return; }
+      if (risky.test(textarea.value)) {
+        showToast(i18n.t('toastPII'), 'error');
+        submitBtn.disabled = false;
+        return;
+      }
+
       try {
-        const body = new URLSearchParams(); body.set('text', textarea.value.trim());
-        const res = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' }, body });
-        const text = await res.text(); if (!res.ok) throw new Error(text || 'Error');
-        form.reset(); updateState(); showToast(i18n.t('toastOk'));
-      } catch (err) { console.error(err); showToast(i18n.t('toastErr'), 'error'); submitBtn.disabled = false; }
+        const body = new URLSearchParams({ text: textarea.value.trim() });
+        const res = await fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+          body
+        });
+        const text = await res.text();
+        if (!res.ok) throw new Error(text || 'Error');
+        form.reset();
+        updateState();
+        showToast(i18n.t('toastOk'));
+      } catch (err) {
+        console.error(err);
+        showToast(i18n.t('toastErr'), 'error');
+        submitBtn.disabled = false;
+      }
     });
 
-    // init
+    // Initial UI setup
     updateState();
   </script>
 </body>
