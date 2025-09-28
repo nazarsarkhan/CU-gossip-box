@@ -49,7 +49,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      align-items: center;
+      align-items: stretch;
       gap: clamp(18px, 4vh, 28px);
       min-height: 100vh;
       transition: background .3s ease;
@@ -60,31 +60,34 @@
       top: clamp(12px, 3vh, 28px);
       align-self: flex-end;
       margin-inline: auto 0;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 12px;
       align-items: center;
+      justify-content: flex-end;
       background: var(--glass);
       border: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
       border-radius: 18px;
-      padding: 14px 18px;
+      padding: 10px 16px;
       backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
       box-shadow: 0 12px 30px rgba(19,34,61,.12);
       z-index: 5;
-      max-width: min(460px, 100%);
-      width: 100%;
+      width: fit-content;
+      max-width: 100%;
+      isolation: isolate;
+      overflow: hidden;
     }
     .floating-controls .control {
-      display: grid;
-      grid-template-columns: 40px 1fr;
-      grid-template-rows: auto auto;
+      display: flex;
       align-items: center;
-      gap: 6px 12px;
+      gap: 12px;
       font-size: 13px;
       color: var(--muted);
-      white-space: normal;
+      white-space: nowrap;
       min-width: 0;
       padding: 4px 0;
+      flex: 0 1 auto;
     }
     .floating-controls .control-icon {
       display: inline-flex;
@@ -96,55 +99,71 @@
       background: color-mix(in srgb, var(--acc) 18%, transparent);
       color: var(--acc);
       font-size: 16px;
-      grid-row: 1 / span 2;
+      flex-shrink: 0;
     }
     .theme-dark .floating-controls .control-icon {
       background: color-mix(in srgb, var(--acc) 32%, transparent);
       color: #f6fbff;
     }
+    .floating-controls .control-body { display:flex; flex-direction:row; align-items:center; gap:10px; min-width:0; }
     .floating-controls .control-label {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: .04em;
+      letter-spacing: .05em;
       text-transform: uppercase;
       color: var(--muted);
-      text-align: center;
-      grid-column: 2;
-      justify-self: center;
+      text-align: left;
+      white-space: nowrap;
     }
     .floating-controls select {
       appearance:none;
       border: none;
-      background: rgba(255,255,255,.94);
+      background: linear-gradient(135deg, color-mix(in srgb, rgba(255,255,255,.94) 88%, var(--acc) 12%), rgba(255,255,255,.94));
       color: var(--text);
-      border-radius: 14px;
-      padding: 10px 36px 10px 14px;
+      border-radius: 12px;
+      padding: 8px 34px 8px 14px;
       font: inherit;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 70%, transparent);
-      transition: box-shadow .18s ease, background .18s ease, color .18s ease;
+      transition: box-shadow .18s ease, background .18s ease, color .18s ease, transform .18s ease;
       position: relative;
       text-align: center;
       text-align-last: center;
-      width: 100%;
-      min-height: 44px;
+      min-height: 36px;
+      min-width: 140px;
+      max-width: 200px;
+      display: block;
+      line-height: 1.15;
     }
     .floating-controls select:hover {
       box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--acc) 30%, var(--border));
-      background: color-mix(in srgb, rgba(255,255,255,.94) 88%, var(--acc) 12%);
+      background: linear-gradient(135deg, color-mix(in srgb, rgba(255,255,255,.94) 78%, var(--acc) 22%), rgba(255,255,255,.94));
+      transform: translateY(-1px);
     }
-    .floating-controls select:focus-visible { outline: none; box-shadow: inset 0 0 0 2px rgba(0,140,226,.45); }
-    .floating-controls .select-wrap { position: relative; width: 100%; grid-column: 2; grid-row: 2; color: var(--muted); }
+    .floating-controls select:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px rgba(0,140,226,.45);
+      transform: translateY(-1px);
+    }
+    .floating-controls .select-wrap { position: relative; color: var(--muted); flex: 0 0 auto; }
     .theme-dark .floating-controls .select-wrap { color: rgba(246,251,255,.7); }
     .floating-controls .select-wrap::after {
       content: '';
-      position: absolute; right: 12px; top: 50%; width: 10px; height: 6px; margin-top: -3px; background: currentColor;
+      position: absolute; right: 14px; top: 50%; width: 10px; height: 6px; margin-top: -3px; background: currentColor;
       mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.75 6 6.25 11 1.75" stroke="%23000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>') center/contain no-repeat;
-      opacity: .6; pointer-events: none;
+      opacity: .6; pointer-events: none; transition: opacity .18s ease, transform .18s ease;
     }
-    .floating-controls select option { background: var(--card); color: var(--text); font-weight: 600; padding: 10px 12px; text-align: center; }
-    .theme-dark .floating-controls select { background: rgba(20,29,51,.92); box-shadow: inset 0 0 0 1px color-mix(in srgb, rgba(151,167,201,.7) 70%, transparent); }
+    .floating-controls .select-wrap:focus-within::after { opacity: .9; transform: translateY(-2px); }
+    .floating-controls select option { background: var(--card); color: var(--text); font-weight: 600; padding: 8px 12px; text-align: center; }
+    .theme-dark .floating-controls select {
+      background: linear-gradient(135deg, color-mix(in srgb, rgba(20,29,51,.92) 88%, rgba(58,169,255,.16) 12%), rgba(20,29,51,.92));
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, rgba(151,167,201,.7) 70%, transparent);
+    }
+    .theme-dark .floating-controls select:hover {
+      background: linear-gradient(135deg, color-mix(in srgb, rgba(20,29,51,.92) 74%, rgba(58,169,255,.26) 26%), rgba(20,29,51,.92));
+    }
     .theme-dark .floating-controls select option { background: rgba(20,29,51,.92); color: var(--text); }
     .theme-dark .floating-controls { box-shadow: 0 14px 34px rgba(0,0,0,.45); }
 
@@ -177,7 +196,7 @@
       border: 1px solid color-mix(in srgb, var(--border) 78%, transparent); border-radius: 14px; padding: 14px 16px; font: inherit; outline: none;
       transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
     }
-    textarea { resize: vertical; min-height: 140px; }
+    textarea { resize: vertical; min-height: 140px; max-height: min(520px, 70vh); }
     input[type="text"]:focus, textarea:focus { border-color: color-mix(in srgb, var(--acc) 80%, white 20%); box-shadow: 0 0 0 3px color-mix(in srgb, var(--acc) 18%, transparent); background: color-mix(in srgb, var(--card) 90%, rgba(255,255,255,.92)); }
 
     .row { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
@@ -215,8 +234,12 @@
     }
     @media (max-width: 640px) {
       body { padding: clamp(16px, 5vh, 32px) clamp(12px, 5vw, 20px); }
-      .floating-controls { position: static; top: auto; grid-template-columns: 1fr; gap: 14px; border-radius: 20px; }
-      .floating-controls .control { grid-template-columns: 40px 1fr; }
+      .floating-controls { position: static; top: auto; gap: 14px; border-radius: 20px; }
+      .floating-controls { width: 100%; flex-wrap: wrap; justify-content: center; padding: 14px 18px; }
+      .floating-controls .control { flex: 1 1 100%; white-space: normal; padding: 6px 0; }
+      .floating-controls .control-body { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .floating-controls .select-wrap { width: 100%; }
+      .floating-controls select { width: 100%; min-height: 44px; padding: 11px 40px 11px 16px; }
       form { padding: 0 16px 24px; }
       footer { padding: 18px 16px 22px; flex-direction: column; align-items: flex-start; }
     }
@@ -226,23 +249,27 @@
   <div class="floating-controls" role="toolbar" aria-label="Site controls">
     <label class="control" for="lang">
       <span class="control-icon" aria-hidden="true">🌐</span>
-      <span class="control-label" data-i18n="langLabel">Language</span>
-      <div class="select-wrap">
-        <select id="lang" aria-label="Language">
-          <option value="en" data-i18n="langEn">English</option>
-          <option value="ru" data-i18n="langRu">Русский</option>
-        </select>
+      <div class="control-body">
+        <span class="control-label" data-i18n="langLabel">Language</span>
+        <div class="select-wrap">
+          <select id="lang" aria-label="Language">
+            <option value="en" data-i18n="langEn">English</option>
+            <option value="ru" data-i18n="langRu">Русский</option>
+          </select>
+        </div>
       </div>
     </label>
     <label class="control" for="themeSel">
       <span class="control-icon" id="themeIcon" aria-hidden="true">🌓</span>
-      <span class="control-label" data-i18n="themeLabel">Theme</span>
-      <div class="select-wrap">
-        <select id="themeSel" aria-label="Theme">
-          <option value="auto" data-i18n="themeAuto">Auto</option>
-          <option value="light" data-i18n="themeLight">Light</option>
-          <option value="dark" data-i18n="themeDark">Dark</option>
-        </select>
+      <div class="control-body">
+        <span class="control-label" data-i18n="themeLabel">Theme</span>
+        <div class="select-wrap">
+          <select id="themeSel" aria-label="Theme">
+            <option value="auto" data-i18n="themeAuto">Auto</option>
+            <option value="light" data-i18n="themeLight">Light</option>
+            <option value="dark" data-i18n="themeDark">Dark</option>
+          </select>
+        </div>
       </div>
     </label>
   </div>
