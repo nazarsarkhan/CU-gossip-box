@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="auto">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gossip Box — Submit</title>
+  <meta name="description" content="Анонимная форма для отправки сообщений на модерацию" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* THEME TOKENS */
+    :root {
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(0,0,0,.15);
+
+      /* Light defaults */
+      --bg: #f7f7fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #687083;
+      --border: #e6e8ef;
+      --acc: #6842ff;
+      --acc-2: #16a34a;
+    }
+    /* Dark theme overrides */
+    .theme-dark {
+      --bg: #0b0c10;
+      --card: #111318;
+      --text: #e5e7eb;
+      --muted: #9095a1;
+      --border: #1f232d;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --acc: #7c5cff;
+      --acc-2: #22c55e;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; padding: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: grid; place-items: center;
+    }
+
+    .container {
+      width: min(760px, 92vw);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    header { padding: 22px 22px 12px; display:flex; align-items:center; gap:14px; justify-content:space-between; }
+    .brand-left { display:flex; align-items:center; gap:12px; }
+    .logo { width: 120px; height: auto; display:block; }
+    .title { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: .2px; }
+    .subtitle { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+
+    .controls { display:flex; align-items:center; gap:10px; }
+    .select, .toggle {
+      appearance:none; border:1px solid var(--border); background: transparent; color: var(--text);
+      border-radius: 10px; padding: 8px 10px; font: inherit; cursor:pointer;
+    }
+
+    form { padding: 16px 20px 24px; }
+    .field { margin: 14px 0 0; }
+    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+    input[type="text"], textarea {
+      width: 100%; background: transparent; color: var(--text);
+      border: 1px solid var(--border); border-radius: 12px; padding: 14px 14px; font: inherit; outline: none;
+      transition: border-color .18s ease, background .18s ease;
+    }
+    textarea { resize: vertical; min-height: 140px; }
+    input[type="text"]:focus, textarea:focus { border-color: var(--acc); }
+
+    .row { display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+    .muted { color: var(--muted); font-size: 12px; }
+    .counter { font-size: 12px; color: var(--muted); }
+
+    .consent { display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; }
+    .consent input { margin-top: 3px; }
+
+    .actions { display: flex; gap: 10px; margin-top: 16px; align-items: center; }
+    button[type="submit"] {
+      appearance: none; border: none; cursor: pointer; user-select: none;
+      background: linear-gradient(135deg, var(--acc), #5b32ff);
+      color: white; font-weight: 600; letter-spacing: .2px; padding: 12px 16px; border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(124,92,255,.25);
+      transition: transform .05s ease, filter .2s ease, opacity .2s ease;
+    }
+    button[disabled] { opacity: .6; cursor: not-allowed; box-shadow: none; }
+    button:not([disabled]):active { transform: translateY(1px); }
+    .ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+
+    .toast { position: fixed; right: 20px; bottom: 20px; max-width: min(420px, 90vw);
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow); display: none; }
+    .toast[data-show="true"] { display: block; }
+    .toast p { margin: 0; font-size: 14px; }
+    .toast.success { border-color: rgba(74,222,128,.4); }
+    .toast.error { border-color: rgba(239,68,68,.4); }
+
+    footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .brand { font-weight: 600; font-size: 13px; color: var(--muted); }
+    .links { display: flex; gap: 12px; }
+    .links a { color: var(--muted); text-decoration: none; font-size: 12px; }
+    .links a:hover { text-decoration: underline; }
+
+    @media (max-width: 520px) {
+      header { padding: 18px 14px 6px; gap:10px; }
+      .title { font-size: 18px; }
+      form { padding: 12px 14px 18px; }
+      footer { padding: 14px; }
+      .logo { width: 96px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="region" aria-labelledby="title">
+    <header>
+      <div class="brand-left">
+        <img class="logo" alt="Gossip Box" src="logo_CUB.png" onerror="this.style.display='none'" />
+        <div>
+          <h1 class="title" id="title" data-i18n="title">Анонимная отправка</h1>
+          <p class="subtitle" data-i18n="subtitle">Напишите историю. Модераторы проверят и опубликуют в канале.</p>
+        </div>
+      </div>
+      <div class="controls">
+        <select id="lang" class="select" aria-label="Language">
+          <option value="ru">Рус</option>
+          <option value="en">Eng</option>
+        </select>
+        <button id="themeBtn" class="toggle" type="button" aria-label="Toggle theme" data-i18n="theme">Тема: авто</button>
+      </div>
+    </header>
+
+    <form id="form" aria-describedby="rules">
+      <div class="field">
+        <label for="message" data-i18n="labelMessage">Текст сообщения</label>
+        <textarea id="message" name="text" minlength="10" maxlength="2000" placeholder="Без ФИО, телефонов и адресов" required></textarea>
+        <div class="row" style="margin-top:8px">
+          <span class="muted" id="rules" data-i18n="rules">Отправляя, вы подтверждаете, что не публикуете персональные данные.</span>
+          <span class="counter" id="counter">0 / 2000</span>
+        </div>
+      </div>
+
+      <div class="consent">
+        <input type="checkbox" id="agree" required />
+        <label for="agree"><small data-i18n="consent">Я согласен(на) с правилами и понимаю, что сообщение пойдёт на модерацию и может быть отклонено.</small></label>
+      </div>
+
+      <div class="actions">
+        <button id="submitBtn" type="submit" disabled data-i18n="send">Отправить на модерацию</button>
+        <button class="ghost" type="reset" data-i18n="clear">Очистить</button>
+      </div>
+      <p class="muted" style="margin-top:8px" data-i18n="note">Минимум 10 символов. Сообщения с персональными данными будут отклонены.</p>
+    </form>
+
+    <footer>
+      <span class="brand">Constructor Uni — Gossip Box</span>
+      <nav class="links" aria-label="Links">
+        <a href="#" onclick="alert(i18n.t('faqHint')); return false;" data-i18n="rulesLink">Правила</a>
+        <a href="#" onclick="alert(i18n.t('channelHint')); return false;" data-i18n="channel">Наш канал</a>
+      </nav>
+    </footer>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // ===== THEME =====
+    const root = document.documentElement;
+    const themeBtn = document.getElementById('themeBtn');
+    const THEME_KEY = 'gossip.theme';
+    function applyTheme(mode){
+      root.classList.remove('theme-dark');
+      if(mode === 'dark') root.classList.add('theme-dark');
+      root.dataset.mode = mode;
+      themeBtn.textContent = i18n.t('theme') + ': ' + i18n.t(mode);
+    }
+    function getSystemPref(){ return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    let theme = localStorage.getItem(THEME_KEY) || 'auto';
+    applyTheme(theme === 'auto' ? (getSystemPref()==='dark'?'dark':'light') : theme);
+    themeBtn.addEventListener('click', ()=>{
+      const next = theme === 'auto' ? 'light' : theme === 'light' ? 'dark' : 'auto';
+      theme = next; localStorage.setItem(THEME_KEY, next);
+      applyTheme(next === 'auto' ? (getSystemPref()==='dark'?'dark':'light') : next);
+    });
+
+    // ===== I18N =====
+    const dict = {
+      ru: {
+        title: 'Анонимная отправка',
+        subtitle: 'Напишите историю. Модераторы проверят и опубликуют в канале.',
+        labelMessage: 'Текст сообщения',
+        rules: 'Отправляя, вы подтверждаете, что не публикуете персональные данные.',
+        consent: 'Я согласен(на) с правилами и понимаю, что сообщение пойдёт на модерацию и может быть отклонено.',
+        send: 'Отправить на модерацию',
+        clear: 'Очистить',
+        note: 'Минимум 10 символов. Сообщения с персональными данными будут отклонены.',
+        rulesLink: 'Правила',
+        channel: 'Наш канал',
+        faqHint: 'Добавьте страницу с правилами/FAQ',
+        channelHint: 'Добавьте ссылку на телеграм‑канал',
+        theme: 'Тема', auto:'авто', light:'светлая', dark:'тёмная',
+        toastPII: 'Похоже, есть личные данные (телефон/почта/ссылки). Уберите их и попробуйте снова.',
+        toastOk: 'Готово! Заявка отправлена на модерацию.',
+        toastErr: 'Не удалось отправить. Попробуйте позже.'
+      },
+      en: {
+        title: 'Anonymous submission',
+        subtitle: 'Write your story. Moderators will review it and post to the channel.',
+        labelMessage: 'Message text',
+        rules: 'By sending, you confirm you do not include personal data.',
+        consent: 'I agree to the rules and understand my message goes to moderation and can be rejected.',
+        send: 'Send to moderation',
+        clear: 'Clear',
+        note: 'Minimum 10 characters. Submissions with personal data will be rejected.',
+        rulesLink: 'Rules',
+        channel: 'Our channel',
+        faqHint: 'Add a Rules/FAQ page',
+        channelHint: 'Add a link to your Telegram channel',
+        theme: 'Theme', auto:'auto', light:'light', dark:'dark',
+        toastPII: 'It looks like there is personal data (phone/email/links). Remove it and try again.',
+        toastOk: 'Done! Your submission was sent for moderation.',
+        toastErr: 'Failed to send. Try again later.'
+      }
+    };
+    const i18n = {
+      lang: localStorage.getItem('gossip.lang') || (navigator.language?.startsWith('ru')?'ru':'en'),
+      t(k){ return (dict[this.lang] && dict[this.lang][k]) || k; },
+      apply(){
+        document.querySelectorAll('[data-i18n]').forEach(el=>{
+          const key = el.getAttribute('data-i18n');
+          el.textContent = i18n.t(key);
+        });
+        // update placeholders
+        document.getElementById('message').setAttribute('placeholder', i18n.lang==='ru' ? 'Без ФИО, телефонов и адресов' : 'No names, phone numbers or addresses');
+        // update theme label
+        applyTheme(theme === 'auto' ? (getSystemPref()==='dark'?'dark':'light') : theme);
+      }
+    };
+    const langSel = document.getElementById('lang');
+    langSel.value = i18n.lang;
+    langSel.addEventListener('change', ()=>{ i18n.lang = langSel.value; localStorage.setItem('gossip.lang', i18n.lang); i18n.apply(); });
+
+    // ===== FORM LOGIC =====
+    const form = document.getElementById('form');
+    const textarea = document.getElementById('message');
+    const counter = document.getElementById('counter');
+    const agree = document.getElementById('agree');
+    const submitBtn = document.getElementById('submitBtn');
+    const toast = document.getElementById('toast');
+    const ENDPOINT = '/api/submit';
+
+    function updateState(){
+      const len = textarea.value.length;
+      counter.textContent = `${len} / 2000`;
+      const ok = len >= 10 && len <= 2000 && agree.checked;
+      submitBtn.disabled = !ok;
+    }
+
+    textarea.addEventListener('input', updateState);
+    agree.addEventListener('change', updateState);
+    form.addEventListener('reset', () => { setTimeout(() => { textarea.focus(); updateState(); }, 0); });
+
+    function showToast(msg, type='success'){
+      toast.className = `toast ${type}`; toast.dataset.show = 'true'; toast.innerHTML = `<p>${msg}</p>`; setTimeout(()=>{ toast.dataset.show='false'; }, 4500);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault(); submitBtn.disabled = true;
+      const risky = /(\+?\d[\d\s\-()]{8,})|([\w.+-]+@[\w-]+\.[a-z]{2,})|(t\.me\/)\b/i;
+      if (risky.test(textarea.value)) { showToast(i18n.t('toastPII'), 'error'); submitBtn.disabled = false; return; }
+      try {
+        const body = new URLSearchParams(); body.set('text', textarea.value.trim());
+        const res = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' }, body });
+        const text = await res.text(); if (!res.ok) throw new Error(text || 'Error');
+        form.reset(); updateState(); showToast(i18n.t('toastOk'));
+      } catch (err) { console.error(err); showToast(i18n.t('toastErr'), 'error'); submitBtn.disabled = false; }
+    });
+
+    // init
+    updateState(); i18n.apply();
+  </script>
+</body>
+</html>
