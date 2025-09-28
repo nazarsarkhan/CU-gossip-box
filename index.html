@@ -247,31 +247,31 @@
 </head>
 <body>
   <div class="floating-controls" role="toolbar" aria-label="Site controls">
-    <label class="control" for="lang">
+    <div class="control">
       <span class="control-icon" aria-hidden="true">🌐</span>
       <div class="control-body">
-        <span class="control-label" data-i18n="langLabel">Language</span>
+        <span class="control-label" id="langLabel" data-i18n="langLabel">Language</span>
         <div class="select-wrap">
-          <select id="lang" aria-label="Language">
+          <select id="lang" aria-labelledby="langLabel" aria-label="Language">
             <option value="en" data-i18n="langEn">English</option>
             <option value="ru" data-i18n="langRu">Русский</option>
           </select>
         </div>
       </div>
-    </label>
-    <label class="control" for="themeSel">
+    </div>
+    <div class="control">
       <span class="control-icon" id="themeIcon" aria-hidden="true">🌓</span>
       <div class="control-body">
-        <span class="control-label" data-i18n="themeLabel">Theme</span>
+        <span class="control-label" id="themeLabel" data-i18n="themeLabel">Theme</span>
         <div class="select-wrap">
-          <select id="themeSel" aria-label="Theme">
+          <select id="themeSel" aria-labelledby="themeLabel" aria-label="Theme">
             <option value="auto" data-i18n="themeAuto">Auto</option>
             <option value="light" data-i18n="themeLight">Light</option>
             <option value="dark" data-i18n="themeDark">Dark</option>
           </select>
         </div>
       </div>
-    </label>
+    </div>
   </div>
 
   <div class="container" role="region" aria-labelledby="title">
@@ -326,21 +326,36 @@
     const themeSel = document.getElementById('themeSel');
     const themeIcon = document.getElementById('themeIcon');
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    function resolveTheme(mode){ return mode === 'auto' ? (mediaQuery.matches ? 'dark' : 'light') : mode; }
-    function applyTheme(mode){
+
+    /** Resolve requested mode (auto/light/dark) to an actual theme. */
+    const resolveTheme = (mode) => mode === 'auto' ? (mediaQuery.matches ? 'dark' : 'light') : mode;
+
+    /** Apply a theme visually and keep the select/icon in sync. */
+    const applyTheme = (mode) => {
       const resolved = resolveTheme(mode);
       root.classList.toggle('theme-dark', resolved === 'dark');
       root.dataset.mode = resolved;
       root.setAttribute('data-theme', mode);
       root.setAttribute('data-theme-resolved', resolved);
-      themeSel.value = mode;
+      if(themeSel.value !== mode){ themeSel.value = mode; }
       if(themeIcon){ themeIcon.textContent = mode === 'auto' ? '🌓' : (resolved === 'dark' ? '🌙' : '☀️'); }
-    }
+    };
+
     let theme = localStorage.getItem(THEME_KEY) || 'auto';
     applyTheme(theme);
-    themeSel.addEventListener('change', () => { theme = themeSel.value; localStorage.setItem(THEME_KEY, theme); applyTheme(theme); });
+
+    themeSel.addEventListener('change', () => {
+      theme = themeSel.value;
+      localStorage.setItem(THEME_KEY, theme);
+      applyTheme(theme);
+    });
+
     const syncSystemTheme = () => { if(theme === 'auto') applyTheme('auto'); };
-    if(mediaQuery.addEventListener){ mediaQuery.addEventListener('change', syncSystemTheme); } else if(mediaQuery.addListener){ mediaQuery.addListener(syncSystemTheme); }
+    if(mediaQuery.addEventListener){
+      mediaQuery.addEventListener('change', syncSystemTheme);
+    } else if(mediaQuery.addListener){
+      mediaQuery.addListener(syncSystemTheme);
+    }
 
     // ===== I18N =====
     const dict = {
@@ -350,6 +365,16 @@
     const LANG_KEY = 'gossip.lang';
     const DEFAULT_LANG = 'en';
     const langSel = document.getElementById('lang');
+    const themeOptions = {
+      auto: themeSel.querySelector('[value="auto"]'),
+      light: themeSel.querySelector('[value="light"]'),
+      dark: themeSel.querySelector('[value="dark"]'),
+    };
+    const langOptions = {
+      en: langSel.querySelector('[value="en"]'),
+      ru: langSel.querySelector('[value="ru"]'),
+    };
+
     const i18n = {
       get lang(){ return this._lang; }, set lang(v){ this._lang = v; },
       t(k){ return (dict[this.lang] && dict[this.lang][k]) || k; },
@@ -363,17 +388,21 @@
         });
         document.getElementById('message').setAttribute('placeholder', this.lang==='ru' ? 'Без ФИО, телефонов и адресов' : 'No names, phone numbers or addresses');
         // update select option texts
-        langSel.querySelector('[value="en"]').textContent = this.t('langEn');
-        langSel.querySelector('[value="ru"]').textContent = this.t('langRu');
-        themeSel.querySelector('[value="auto"]').textContent = this.t('themeAuto');
-        themeSel.querySelector('[value="light"]').textContent = this.t('themeLight');
-        themeSel.querySelector('[value="dark"]').textContent = this.t('themeDark');
+        langOptions.en.textContent = this.t('langEn');
+        langOptions.ru.textContent = this.t('langRu');
+        themeOptions.auto.textContent = this.t('themeAuto');
+        themeOptions.light.textContent = this.t('themeLight');
+        themeOptions.dark.textContent = this.t('themeDark');
       }
     };
     const storedLang = localStorage.getItem(LANG_KEY);
     const initialLang = dict[storedLang] ? storedLang : DEFAULT_LANG;
     i18n.lang = initialLang; langSel.value = initialLang; i18n.apply();
-    langSel.addEventListener('change', ()=>{ i18n.lang = langSel.value; localStorage.setItem(LANG_KEY, i18n.lang); i18n.apply(); });
+    langSel.addEventListener('change', ()=>{
+      i18n.lang = langSel.value;
+      localStorage.setItem(LANG_KEY, i18n.lang);
+      i18n.apply();
+    });
 
     // ===== FORM LOGIC =====
     const form = document.getElementById('form');
@@ -384,21 +413,47 @@
     const toast = document.getElementById('toast');
     const ENDPOINT = '/api/submit';
 
-    function updateState(){ const len = textarea.value.length; counter.textContent = `${len} / 2000`; const ok = len >= 10 && len <= 2000 && agree.checked; submitBtn.disabled = !ok; }
-    textarea.addEventListener('input', updateState); agree.addEventListener('change', updateState); form.addEventListener('reset', () => { setTimeout(() => { textarea.focus(); updateState(); }, 0); });
+    const updateState = () => {
+      const len = textarea.value.length;
+      counter.textContent = `${len} / 2000`;
+      const isValid = len >= 10 && len <= 2000 && agree.checked;
+      submitBtn.disabled = !isValid;
+    };
+    textarea.addEventListener('input', updateState);
+    agree.addEventListener('change', updateState);
+    form.addEventListener('reset', () => { requestAnimationFrame(() => { textarea.focus(); updateState(); }); });
 
-    function showToast(msg, type='success'){ toast.className = `toast ${type}`; toast.dataset.show = 'true'; toast.innerHTML = `<p>${msg}</p>`; setTimeout(()=>{ toast.dataset.show='false'; }, 4500); }
+    const showToast = (msg, type='success') => {
+      toast.className = `toast ${type}`;
+      toast.dataset.show = 'true';
+      toast.innerHTML = `<p>${msg}</p>`;
+      setTimeout(()=>{ toast.dataset.show='false'; }, 4500);
+    };
+
+    const RISKY_PATTERN = /(\+?\d[\d\s\-()]{8,})|([\w.+-]+@[\w-]+\.[a-z]{2,})|(t\.me\/)/i;
 
     form.addEventListener('submit', async (e) => {
-      e.preventDefault(); submitBtn.disabled = true;
-      const risky = /(\+?\d[\d\s\-()]{8,})|([\w.+-]+@[\w-]+\.[a-z]{2,})|(t\.me\/)/i;
-      if (risky.test(textarea.value)) { showToast(i18n.t('toastPII'), 'error'); submitBtn.disabled = false; return; }
+      e.preventDefault();
+      submitBtn.disabled = true;
+      if (RISKY_PATTERN.test(textarea.value)) {
+        showToast(i18n.t('toastPII'), 'error');
+        submitBtn.disabled = false;
+        return;
+      }
       try {
-        const body = new URLSearchParams(); body.set('text', textarea.value.trim());
+        const body = new URLSearchParams();
+        body.set('text', textarea.value.trim());
         const res = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' }, body });
-        const text = await res.text(); if (!res.ok) throw new Error(text || 'Error');
-        form.reset(); updateState(); showToast(i18n.t('toastOk'));
-      } catch (err) { console.error(err); showToast(i18n.t('toastErr'), 'error'); submitBtn.disabled = false; }
+        const text = await res.text();
+        if (!res.ok) throw new Error(text || 'Error');
+        form.reset();
+        updateState();
+        showToast(i18n.t('toastOk'));
+      } catch (err) {
+        console.error(err);
+        showToast(i18n.t('toastErr'), 'error');
+        submitBtn.disabled = false;
+      }
     });
 
     // init
