@@ -1,12 +1,19 @@
 <!DOCTYPE html>
+
 <html lang="en" data-theme="auto">
 <head>
+
   <meta charset="UTF-8" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <title>Gossip Box — Submit</title>
+
   <meta name="description" content="Anonymous form for sending messages to moderation" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
     /* THEME TOKENS */
     :root {
@@ -36,8 +43,11 @@
       --glass: rgba(20,29,51,.82);
     }
 
+
     * { box-sizing: border-box; }
+
     html, body { height: 100%; }
+
     body {
       margin: 0;
       padding: clamp(18px, 6vh, 48px) clamp(16px, 4vw, 48px);
@@ -158,6 +168,7 @@
       border: 0;
     }
 
+
     .container {
       width: min(760px, 100%);
       max-width: 760px;
@@ -246,9 +257,14 @@
     .toast { position: fixed; right: 20px; bottom: 20px; max-width: min(420px, 90vw);
       background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow); display: none; }
     .toast[data-show="true"] { display: block; }
+
     .toast p { margin: 0; font-size: 14px; }
+
     .toast.success { border-color: rgba(74,222,128,.4); }
+
     .toast.error { border-color: rgba(239,68,68,.4); }
+
+
 
     footer { padding: clamp(20px, 4vw, 28px); border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
     .brand { font-weight: 600; font-size: 13px; color: var(--muted); }
@@ -334,8 +350,11 @@
       </div>
     </header>
 
+
     <form id="form" aria-describedby="rules">
+
       <div class="field">
+
         <label for="message" data-i18n="labelMessage">Message text</label>
         <textarea id="message" name="text" minlength="10" maxlength="2000" placeholder="No names, phone numbers or addresses" required></textarea>
         <div class="row" style="margin-top:8px">
@@ -365,10 +384,15 @@
     </footer>
   </div>
 
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+
+
   <script>
+
     // ===== THEME =====
+
     const root = document.documentElement;
     const THEME_KEY = 'gossip.theme';
     const themeSel = document.getElementById('themeSel');
@@ -400,7 +424,9 @@
       mediaQuery.addListener(syncSystemTheme);
     }
 
+
     // ===== I18N =====
+
     const dict = {
       en: {
         title: 'Anonymous submission',
@@ -475,44 +501,49 @@
       i18n.apply();
     });
 
+
     // ===== FORM LOGIC =====
+
     const form = document.getElementById('form');
+
     const textarea = document.getElementById('message');
+
     const counter = document.getElementById('counter');
+
     const agree = document.getElementById('agree');
+
     const submitBtn = document.getElementById('submitBtn');
+
     const toast = document.getElementById('toast');
+
     const ENDPOINT = '/api/submit';
 
+
+
     function updateState(){
+
       const len = textarea.value.length;
+
       counter.textContent = `${len} / 2000`;
+
       const ok = len >= 10 && len <= 2000 && agree.checked;
+
       submitBtn.disabled = !ok;
+
     }
+
+
 
     textarea.addEventListener('input', updateState);
+
     agree.addEventListener('change', updateState);
+
     form.addEventListener('reset', () => { setTimeout(() => { textarea.focus(); updateState(); }, 0); });
 
+
+
     function showToast(msg, type='success'){
+
       toast.className = `toast ${type}`; toast.dataset.show = 'true'; toast.innerHTML = `<p>${msg}</p>`; setTimeout(()=>{ toast.dataset.show='false'; }, 4500);
+
     }
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault(); submitBtn.disabled = true;
-      const risky = /(\+?\d[\d\s\-()]{8,})|([\w.+-]+@[\w-]+\.[a-z]{2,})|(t\.me\/)\b/i;
-      if (risky.test(textarea.value)) { showToast(i18n.t('toastPII'), 'error'); submitBtn.disabled = false; return; }
-      try {
-        const body = new URLSearchParams(); body.set('text', textarea.value.trim());
-        const res = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' }, body });
-        const text = await res.text(); if (!res.ok) throw new Error(text || 'Error');
-        form.reset(); updateState(); showToast(i18n.t('toastOk'));
-      } catch (err) { console.error(err); showToast(i18n.t('toastErr'), 'error'); submitBtn.disabled = false; }
-    });
-
-    // init
-    updateState(); i18n.apply();
-  </script>
-</body>
-</html>
