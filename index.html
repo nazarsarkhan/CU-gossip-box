@@ -49,7 +49,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      align-items: center;
+      align-items: stretch;
       gap: clamp(18px, 4vh, 28px);
       min-height: 100vh;
       transition: background .3s ease;
@@ -61,33 +61,33 @@
       align-self: flex-end;
       margin-inline: auto 0;
       display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      align-items: stretch;
-      justify-content: center;
+      flex-wrap: nowrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: flex-end;
       background: var(--glass);
       border: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
       border-radius: 18px;
-      padding: 14px 18px;
+      padding: 10px 16px;
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       box-shadow: 0 12px 30px rgba(19,34,61,.12);
       z-index: 5;
-      max-width: min(460px, 100%);
-      width: 100%;
+      width: fit-content;
+      max-width: 100%;
       isolation: isolate;
       overflow: hidden;
     }
     .floating-controls .control {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       font-size: 13px;
       color: var(--muted);
-      white-space: normal;
+      white-space: nowrap;
       min-width: 0;
-      padding: 6px 0;
-      flex: 1 1 210px;
+      padding: 4px 0;
+      flex: 0 1 auto;
     }
     .floating-controls .control-icon {
       display: inline-flex;
@@ -105,23 +105,25 @@
       background: color-mix(in srgb, var(--acc) 32%, transparent);
       color: #f6fbff;
     }
-    .floating-controls .control-body { display:flex; flex-direction:column; gap:6px; flex:1; min-width:0; }
+    .floating-controls .control-body { display:flex; flex-direction:row; align-items:center; gap:10px; min-width:0; }
     .floating-controls .control-label {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: .04em;
+      letter-spacing: .05em;
       text-transform: uppercase;
       color: var(--muted);
       text-align: left;
+      white-space: nowrap;
     }
     .floating-controls select {
       appearance:none;
       border: none;
       background: linear-gradient(135deg, color-mix(in srgb, rgba(255,255,255,.94) 88%, var(--acc) 12%), rgba(255,255,255,.94));
       color: var(--text);
-      border-radius: 14px;
-      padding: 11px 40px 11px 16px;
+      border-radius: 12px;
+      padding: 8px 34px 8px 14px;
       font: inherit;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 70%, transparent);
@@ -129,10 +131,11 @@
       position: relative;
       text-align: center;
       text-align-last: center;
-      width: 100%;
-      min-height: 44px;
+      min-height: 36px;
+      min-width: 140px;
+      max-width: 200px;
       display: block;
-      line-height: 1.25;
+      line-height: 1.15;
     }
     .floating-controls select:hover {
       box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--acc) 30%, var(--border));
@@ -144,7 +147,7 @@
       box-shadow: inset 0 0 0 2px rgba(0,140,226,.45);
       transform: translateY(-1px);
     }
-    .floating-controls .select-wrap { position: relative; width: 100%; color: var(--muted); }
+    .floating-controls .select-wrap { position: relative; color: var(--muted); flex: 0 0 auto; }
     .theme-dark .floating-controls .select-wrap { color: rgba(246,251,255,.7); }
     .floating-controls .select-wrap::after {
       content: '';
@@ -153,7 +156,7 @@
       opacity: .6; pointer-events: none; transition: opacity .18s ease, transform .18s ease;
     }
     .floating-controls .select-wrap:focus-within::after { opacity: .9; transform: translateY(-2px); }
-    .floating-controls select option { background: var(--card); color: var(--text); font-weight: 600; padding: 10px 12px; text-align: center; }
+    .floating-controls select option { background: var(--card); color: var(--text); font-weight: 600; padding: 8px 12px; text-align: center; }
     .theme-dark .floating-controls select {
       background: linear-gradient(135deg, color-mix(in srgb, rgba(20,29,51,.92) 88%, rgba(58,169,255,.16) 12%), rgba(20,29,51,.92));
       box-shadow: inset 0 0 0 1px color-mix(in srgb, rgba(151,167,201,.7) 70%, transparent);
@@ -232,7 +235,11 @@
     @media (max-width: 640px) {
       body { padding: clamp(16px, 5vh, 32px) clamp(12px, 5vw, 20px); }
       .floating-controls { position: static; top: auto; gap: 14px; border-radius: 20px; }
-      .floating-controls .control { flex: 1 1 100%; }
+      .floating-controls { width: 100%; flex-wrap: wrap; justify-content: center; padding: 14px 18px; }
+      .floating-controls .control { flex: 1 1 100%; white-space: normal; padding: 6px 0; }
+      .floating-controls .control-body { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .floating-controls .select-wrap { width: 100%; }
+      .floating-controls select { width: 100%; min-height: 44px; padding: 11px 40px 11px 16px; }
       form { padding: 0 16px 24px; }
       footer { padding: 18px 16px 22px; flex-direction: column; align-items: flex-start; }
     }
