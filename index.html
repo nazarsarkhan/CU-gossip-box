@@ -1,98 +1,285 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="auto">
+<html lang="en" data-theme="auto">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gossip Box — Submit</title>
-  <meta name="description" content="Анонимная форма для отправки сообщений на модерацию" />
+  <meta name="description" content="Anonymous form for sending messages to moderation" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     /* THEME TOKENS */
     :root {
       --radius: 16px;
-      --shadow: 0 10px 30px rgba(0,0,0,.15);
+      --shadow: 0 14px 36px rgba(16,33,59,.14);
 
       /* Light defaults */
-      --bg: #f7f7fb;
+      --bg: #f2f6fb;
       --card: #ffffff;
-      --text: #0f172a;
-      --muted: #687083;
-      --border: #e6e8ef;
-      --acc: #6842ff;
-      --acc-2: #16a34a;
+      --text: #13223d;
+      --muted: #5c6b86;
+      --border: #d9e1ef;
+      --acc: #008ce2;
+      --acc-2: #db4e3d;
+      --glass: rgba(255,255,255,.82);
     }
     /* Dark theme overrides */
     .theme-dark {
-      --bg: #0b0c10;
-      --card: #111318;
-      --text: #e5e7eb;
-      --muted: #9095a1;
-      --border: #1f232d;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --acc: #7c5cff;
-      --acc-2: #22c55e;
+      --bg: #0f1628;
+      --card: #141d33;
+      --text: #f1f5ff;
+      --muted: #97a7c9;
+      --border: #1f2a44;
+      --shadow: 0 18px 42px rgba(0,0,0,.45);
+      --acc: #3aa9ff;
+      --acc-2: #ff7a66;
+      --glass: rgba(20,29,51,.82);
     }
 
     * { box-sizing: border-box; }
     html, body { height: 100%; }
     body {
-      margin: 0; padding: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: var(--bg);
+      margin: 0;
+      padding: clamp(18px, 6vh, 48px) clamp(16px, 4vw, 48px);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: radial-gradient(circle at 20% -10%, rgba(0,140,226,.16), transparent 45%),
+                  radial-gradient(circle at 85% 10%, rgba(219,78,61,.12), transparent 42%),
+                  var(--bg);
       color: var(--text);
-      display: grid; place-items: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      gap: clamp(18px, 4vh, 28px);
+      min-height: 100vh;
+      transition: background .3s ease;
+    }
+
+    .floating-controls {
+      position: sticky;
+      top: clamp(12px, 3vh, 28px);
+      align-self: flex-end;
+      margin-inline: auto 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      align-items: center;
+      background: var(--glass);
+      border: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+      border-radius: 18px;
+      padding: 14px 18px;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 12px 30px rgba(19,34,61,.12);
+      z-index: 5;
+      max-width: min(460px, 100%);
+      width: 100%;
+    }
+    .floating-controls .control {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      grid-template-rows: auto auto;
+      align-items: center;
+      gap: 6px 12px;
+      font-size: 13px;
+      color: var(--muted);
+      white-space: normal;
+      min-width: 0;
+      padding: 4px 0;
+    }
+    .floating-controls .control-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0,140,226,.12);
+      background: color-mix(in srgb, var(--acc) 18%, transparent);
+      color: var(--acc);
+      font-size: 16px;
+      grid-row: 1 / span 2;
+    }
+    .theme-dark .floating-controls .control-icon {
+      background: rgba(58,169,255,.26);
+      background: color-mix(in srgb, var(--acc) 32%, transparent);
+      color: #f6fbff;
+    }
+    .floating-controls .control-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+      grid-column: 2;
+      justify-self: center;
+    }
+    .floating-controls select {
+      appearance:none;
+      border: none;
+      background: rgba(255,255,255,.94);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 36px 10px 14px;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 70%, transparent);
+      transition: box-shadow .18s ease, background .18s ease, color .18s ease;
+      position: relative;
+      text-align: center;
+      text-align-last: center;
+      width: 100%;
+      min-height: 44px;
+    }
+    .floating-controls select:hover {
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--acc) 30%, var(--border));
+      background: color-mix(in srgb, rgba(255,255,255,.94) 88%, var(--acc) 12%);
+    }
+    .floating-controls select:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px rgba(0,140,226,.45);
+    }
+    .floating-controls .select-wrap {
+      position: relative;
+      width: 100%;
+      grid-column: 2;
+      grid-row: 2;
+      color: var(--muted);
+    }
+    .theme-dark .floating-controls .select-wrap {
+      color: rgba(246,251,255,.7);
+    }
+    .floating-controls .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      width: 10px;
+      height: 6px;
+      margin-top: -3px;
+      background: currentColor;
+      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.75 6 6.25 11 1.75" stroke="%23000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>') center/contain no-repeat;
+      opacity: .6;
+      pointer-events: none;
+    }
+    .floating-controls select option {
+      background: var(--card);
+      color: var(--text);
+      font-weight: 600;
+      padding: 10px 12px;
+      text-align: center;
+    }
+    .theme-dark .floating-controls select {
+      background: rgba(20,29,51,.92);
+      box-shadow: inset 0 0 0 1px rgba(151,167,201,.28);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, rgba(151,167,201,.7) 70%, transparent);
+    }
+    .theme-dark .floating-controls select option {
+      background: rgba(20,29,51,.92);
+      color: var(--text);
+    }
+    .theme-dark .floating-controls {
+      box-shadow: 0 14px 34px rgba(0,0,0,.45);
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     .container {
-      width: min(760px, 92vw);
+      width: min(760px, 100%);
+      max-width: 760px;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
     }
 
-    header { padding: 22px 22px 12px; display:flex; align-items:center; gap:14px; justify-content:space-between; }
-    .brand-left { display:flex; align-items:center; gap:12px; }
-    .logo { width: 120px; height: auto; display:block; }
-    .title { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: .2px; }
-    .subtitle { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
-
-    .controls { display:flex; align-items:center; gap:10px; }
-    .select, .toggle {
-      appearance:none; border:1px solid var(--border); background: transparent; color: var(--text);
-      border-radius: 10px; padding: 8px 10px; font: inherit; cursor:pointer;
+    header {
+      padding: clamp(20px, 4vw, 32px);
+      display:flex;
+      align-items:center;
+      gap: clamp(12px, 3vw, 24px);
+      justify-content:flex-start;
     }
+    .brand-left { display:flex; align-items:center; gap: clamp(10px, 2vw, 18px); }
+    .logo { width: clamp(96px, 22vw, 132px); height: auto; display:block; }
+    .title { margin: 0; font-size: clamp(20px, 2.6vw, 26px); font-weight: 700; letter-spacing: .2px; }
+    .subtitle { margin: 6px 0 0; color: var(--muted); font-size: clamp(13px, 2vw, 15px); }
 
-    form { padding: 16px 20px 24px; }
+    form { padding: 0 clamp(20px, 4vw, 32px) clamp(24px, 5vw, 40px); flex:1; display:flex; flex-direction:column; }
     .field { margin: 14px 0 0; }
     label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
     input[type="text"], textarea {
-      width: 100%; background: transparent; color: var(--text);
-      border: 1px solid var(--border); border-radius: 12px; padding: 14px 14px; font: inherit; outline: none;
-      transition: border-color .18s ease, background .18s ease;
+      width: 100%; background: var(--card); color: var(--text);
+      border: 1px solid color-mix(in srgb, var(--border) 78%, transparent); border-radius: 14px; padding: 14px 16px; font: inherit; outline: none;
+      transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
     }
     textarea { resize: vertical; min-height: 140px; }
-    input[type="text"]:focus, textarea:focus { border-color: var(--acc); }
+    input[type="text"]:focus, textarea:focus {
+      border-color: color-mix(in srgb, var(--acc) 80%, white 20%);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--acc) 18%, transparent);
+      background: color-mix(in srgb, var(--card) 90%, rgba(255,255,255,.92));
+    }
 
-    .row { display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+    .row { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
     .muted { color: var(--muted); font-size: 12px; }
     .counter { font-size: 12px; color: var(--muted); }
 
-    .consent { display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; }
-    .consent input { margin-top: 3px; }
+    .consent { display: flex; gap: 10px; align-items: flex-start; margin-top: 12px; }
+    .consent input { margin-top: 4px; }
 
-    .actions { display: flex; gap: 10px; margin-top: 16px; align-items: center; }
+    .actions { display: flex; gap: 12px; margin-top: 16px; align-items: center; flex-wrap: wrap; }
     button[type="submit"] {
       appearance: none; border: none; cursor: pointer; user-select: none;
-      background: linear-gradient(135deg, var(--acc), #5b32ff);
-      color: white; font-weight: 600; letter-spacing: .2px; padding: 12px 16px; border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(124,92,255,.25);
+      background: linear-gradient(135deg, var(--acc), rgba(0,140,226,.82));
+      background: linear-gradient(135deg, var(--acc), color-mix(in srgb, var(--acc-2) 35%, var(--acc)));
+      color: white; font-weight: 600; letter-spacing: .2px; padding: 12px 22px; border-radius: 14px;
+      box-shadow: 0 10px 24px rgba(0,140,226,.26);
       transition: transform .05s ease, filter .2s ease, opacity .2s ease;
     }
     button[disabled] { opacity: .6; cursor: not-allowed; box-shadow: none; }
     button:not([disabled]):active { transform: translateY(1px); }
-    .ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .ghost {
+      background: color-mix(in srgb, var(--card) 75%, rgba(0,140,226,.08));
+      border: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
+      color: var(--acc);
+      font-weight: 500;
+      padding: 12px 18px;
+      border-radius: 14px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .18s ease, color .18s ease, background .18s ease;
+    }
+    .ghost::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,140,226,.12), rgba(219,78,61,.12));
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+    }
+    .ghost span { position: relative; z-index: 1; }
+    .ghost:hover::before { opacity: 1; }
+    .ghost:hover {
+      color: color-mix(in srgb, var(--acc) 80%, var(--acc-2));
+      border-color: color-mix(in srgb, var(--acc) 35%, var(--border));
+      background: color-mix(in srgb, var(--card) 80%, rgba(0,140,226,.12));
+    }
 
     .toast { position: fixed; right: 20px; bottom: 20px; max-width: min(420px, 90vw);
       background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow); display: none; }
@@ -101,67 +288,118 @@
     .toast.success { border-color: rgba(74,222,128,.4); }
     .toast.error { border-color: rgba(239,68,68,.4); }
 
-    footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    footer { padding: clamp(20px, 4vw, 28px); border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
     .brand { font-weight: 600; font-size: 13px; color: var(--muted); }
-    .links { display: flex; gap: 12px; }
+    .links { display: flex; gap: 14px; flex-wrap: wrap; }
     .links a { color: var(--muted); text-decoration: none; font-size: 12px; }
     .links a:hover { text-decoration: underline; }
 
-    @media (max-width: 520px) {
-      header { padding: 18px 14px 6px; gap:10px; }
-      .title { font-size: 18px; }
-      form { padding: 12px 14px 18px; }
-      footer { padding: 14px; }
-      .logo { width: 96px; }
+    @media (max-width: 900px) {
+      body { align-items: stretch; }
+      .floating-controls {
+        margin-inline: 0;
+        align-self: stretch;
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: clamp(16px, 5vh, 32px) clamp(12px, 5vw, 20px); }
+      .floating-controls {
+        position: static;
+        top: auto;
+        grid-template-columns: 1fr;
+        gap: 14px;
+        border-radius: 20px;
+      }
+      .floating-controls .control {
+        grid-template-columns: 40px 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+      }
+      .brand-left {
+        flex-direction: row;
+        align-items: center;
+      }
+      form {
+        padding: 0 16px 24px;
+      }
+      footer {
+        padding: 18px 16px 22px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="floating-controls" role="toolbar" aria-label="Site controls">
+    <label class="control" for="lang">
+      <span class="control-icon" aria-hidden="true">🌐</span>
+      <span class="control-label" data-i18n="langLabel">Language</span>
+      <div class="select-wrap">
+        <select id="lang" aria-label="Language">
+          <option value="en" data-i18n="langEn">English</option>
+          <option value="ru" data-i18n="langRu">Русский</option>
+        </select>
+      </div>
+    </label>
+    <label class="control" for="themeSel">
+      <span class="control-icon" id="themeIcon" aria-hidden="true">🌓</span>
+      <span class="control-label" data-i18n="themeLabel">Theme</span>
+      <div class="select-wrap">
+        <select id="themeSel" aria-label="Theme">
+          <option value="auto" data-i18n="themeAuto">Auto</option>
+          <option value="light" data-i18n="themeLight">Light</option>
+          <option value="dark" data-i18n="themeDark">Dark</option>
+        </select>
+      </div>
+    </label>
+  </div>
   <div class="container" role="region" aria-labelledby="title">
     <header>
       <div class="brand-left">
         <img class="logo" alt="Gossip Box" src="logo_CUB.png" onerror="this.style.display='none'" />
         <div>
-          <h1 class="title" id="title" data-i18n="title">Анонимная отправка</h1>
-          <p class="subtitle" data-i18n="subtitle">Напишите историю. Модераторы проверят и опубликуют в канале.</p>
+          <h1 class="title" id="title" data-i18n="title">Anonymous submission</h1>
+          <p class="subtitle" data-i18n="subtitle">Write your story. Moderators will review it before publishing.</p>
         </div>
-      </div>
-      <div class="controls">
-        <select id="lang" class="select" aria-label="Language">
-          <option value="ru">Рус</option>
-          <option value="en">Eng</option>
-        </select>
-        <button id="themeBtn" class="toggle" type="button" aria-label="Toggle theme" data-i18n="theme">Тема: авто</button>
       </div>
     </header>
 
     <form id="form" aria-describedby="rules">
       <div class="field">
-        <label for="message" data-i18n="labelMessage">Текст сообщения</label>
-        <textarea id="message" name="text" minlength="10" maxlength="2000" placeholder="Без ФИО, телефонов и адресов" required></textarea>
+        <label for="message" data-i18n="labelMessage">Message text</label>
+        <textarea id="message" name="text" minlength="10" maxlength="2000" placeholder="No names, phone numbers or addresses" required></textarea>
         <div class="row" style="margin-top:8px">
-          <span class="muted" id="rules" data-i18n="rules">Отправляя, вы подтверждаете, что не публикуете персональные данные.</span>
+          <span class="muted" id="rules" data-i18n="rules">By sending you confirm there is no personal data inside.</span>
           <span class="counter" id="counter">0 / 2000</span>
         </div>
       </div>
 
       <div class="consent">
         <input type="checkbox" id="agree" required />
-        <label for="agree"><small data-i18n="consent">Я согласен(на) с правилами и понимаю, что сообщение пойдёт на модерацию и может быть отклонено.</small></label>
+        <label for="agree"><small data-i18n="consent">I agree with the rules and understand the message can be rejected after moderation.</small></label>
       </div>
 
       <div class="actions">
-        <button id="submitBtn" type="submit" disabled data-i18n="send">Отправить на модерацию</button>
-        <button class="ghost" type="reset" data-i18n="clear">Очистить</button>
+        <button id="submitBtn" type="submit" disabled data-i18n="send">Send to moderation</button>
+        <button class="ghost" type="reset" data-i18n="clear"><span>Clear form</span></button>
       </div>
-      <p class="muted" style="margin-top:8px" data-i18n="note">Минимум 10 символов. Сообщения с персональными данными будут отклонены.</p>
+      <p class="muted" style="margin-top:8px" data-i18n="note">Minimum 10 characters. Submissions with personal data will be rejected.</p>
     </form>
 
     <footer>
       <span class="brand">Constructor Uni — Gossip Box</span>
       <nav class="links" aria-label="Links">
-        <a href="#" onclick="alert(i18n.t('faqHint')); return false;" data-i18n="rulesLink">Правила</a>
-        <a href="#" onclick="alert(i18n.t('channelHint')); return false;" data-i18n="channel">Наш канал</a>
+        <a href="#" onclick="alert(i18n.t('faqHint')); return false;" data-i18n="rulesLink">Rules</a>
+        <a href="#" onclick="alert(i18n.t('channelHint')); return false;" data-i18n="channel">Our channel</a>
       </nav>
     </footer>
   </div>
@@ -171,43 +409,40 @@
   <script>
     // ===== THEME =====
     const root = document.documentElement;
-    const themeBtn = document.getElementById('themeBtn');
     const THEME_KEY = 'gossip.theme';
-    function applyTheme(mode){
-      root.classList.remove('theme-dark');
-      if(mode === 'dark') root.classList.add('theme-dark');
-      root.dataset.mode = mode;
-      themeBtn.textContent = i18n.t('theme') + ': ' + i18n.t(mode);
+    const themeSel = document.getElementById('themeSel');
+    const themeIcon = document.getElementById('themeIcon');
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    function resolveTheme(mode){
+      return mode === 'auto' ? (mediaQuery.matches ? 'dark' : 'light') : mode;
     }
-    function getSystemPref(){ return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    function applyTheme(mode){
+      const resolved = resolveTheme(mode);
+      root.classList.toggle('theme-dark', resolved === 'dark');
+      root.dataset.mode = resolved;
+      root.setAttribute('data-theme', mode);
+      root.setAttribute('data-theme-resolved', resolved);
+      themeSel.value = mode;
+      if(themeIcon){
+        themeIcon.textContent = mode === 'auto' ? '🌓' : (resolved === 'dark' ? '🌙' : '☀️');
+      }
+    }
     let theme = localStorage.getItem(THEME_KEY) || 'auto';
-    applyTheme(theme === 'auto' ? (getSystemPref()==='dark'?'dark':'light') : theme);
-    themeBtn.addEventListener('click', ()=>{
-      const next = theme === 'auto' ? 'light' : theme === 'light' ? 'dark' : 'auto';
-      theme = next; localStorage.setItem(THEME_KEY, next);
-      applyTheme(next === 'auto' ? (getSystemPref()==='dark'?'dark':'light') : next);
+    applyTheme(theme);
+    themeSel.addEventListener('change', () => {
+      theme = themeSel.value;
+      localStorage.setItem(THEME_KEY, theme);
+      applyTheme(theme);
     });
+    const syncSystemTheme = () => { if(theme === 'auto') applyTheme('auto'); };
+    if(mediaQuery.addEventListener){
+      mediaQuery.addEventListener('change', syncSystemTheme);
+    } else if(mediaQuery.addListener){
+      mediaQuery.addListener(syncSystemTheme);
+    }
 
     // ===== I18N =====
     const dict = {
-      ru: {
-        title: 'Анонимная отправка',
-        subtitle: 'Напишите историю. Модераторы проверят и опубликуют в канале.',
-        labelMessage: 'Текст сообщения',
-        rules: 'Отправляя, вы подтверждаете, что не публикуете персональные данные.',
-        consent: 'Я согласен(на) с правилами и понимаю, что сообщение пойдёт на модерацию и может быть отклонено.',
-        send: 'Отправить на модерацию',
-        clear: 'Очистить',
-        note: 'Минимум 10 символов. Сообщения с персональными данными будут отклонены.',
-        rulesLink: 'Правила',
-        channel: 'Наш канал',
-        faqHint: 'Добавьте страницу с правилами/FAQ',
-        channelHint: 'Добавьте ссылку на телеграм‑канал',
-        theme: 'Тема', auto:'авто', light:'светлая', dark:'тёмная',
-        toastPII: 'Похоже, есть личные данные (телефон/почта/ссылки). Уберите их и попробуйте снова.',
-        toastOk: 'Готово! Заявка отправлена на модерацию.',
-        toastErr: 'Не удалось отправить. Попробуйте позже.'
-      },
       en: {
         title: 'Anonymous submission',
         subtitle: 'Write your story. Moderators will review it and post to the channel.',
@@ -215,35 +450,71 @@
         rules: 'By sending, you confirm you do not include personal data.',
         consent: 'I agree to the rules and understand my message goes to moderation and can be rejected.',
         send: 'Send to moderation',
-        clear: 'Clear',
+        clear: 'Clear form',
         note: 'Minimum 10 characters. Submissions with personal data will be rejected.',
         rulesLink: 'Rules',
         channel: 'Our channel',
         faqHint: 'Add a Rules/FAQ page',
         channelHint: 'Add a link to your Telegram channel',
-        theme: 'Theme', auto:'auto', light:'light', dark:'dark',
+        theme: 'Theme', themeLabel:'Theme', themeAuto:'Auto', themeLight:'Light', themeDark:'Dark',
+        langLabel:'Language', langRu:'Russian', langEn:'English',
         toastPII: 'It looks like there is personal data (phone/email/links). Remove it and try again.',
         toastOk: 'Done! Your submission was sent for moderation.',
         toastErr: 'Failed to send. Try again later.'
+      },
+      ru: {
+        title: 'Анонимная отправка',
+        subtitle: 'Напишите историю. Модераторы проверят и опубликуют в канале.',
+        labelMessage: 'Текст сообщения',
+        rules: 'Отправляя, вы подтверждаете, что не публикуете персональные данные.',
+        consent: 'Я согласен(на) с правилами и понимаю, что сообщение пойдёт на модерацию и может быть отклонено.',
+        send: 'Отправить на модерацию',
+        clear: 'Очистить форму',
+        note: 'Минимум 10 символов. Сообщения с персональными данными будут отклонены.',
+        rulesLink: 'Правила',
+        channel: 'Наш канал',
+        faqHint: 'Добавьте страницу с правилами/FAQ',
+        channelHint: 'Добавьте ссылку на телеграм‑канал',
+        theme: 'Тема', themeLabel:'Тема', themeAuto:'Авто', themeLight:'Светлая', themeDark:'Тёмная',
+        langLabel:'Язык', langRu:'Русский', langEn:'English',
+        toastPII: 'Похоже, есть личные данные (телефон/почта/ссылки). Уберите их и попробуйте снова.',
+        toastOk: 'Готово! Заявка отправлена на модерацию.',
+        toastErr: 'Не удалось отправить. Попробуйте позже.'
       }
     };
+    const LANG_KEY = 'gossip.lang';
+    const DEFAULT_LANG = 'en';
+    const langSel = document.getElementById('lang');
+
     const i18n = {
-      lang: localStorage.getItem('gossip.lang') || (navigator.language?.startsWith('ru')?'ru':'en'),
-      t(k){ return (dict[this.lang] && dict[this.lang][k]) || k; },
+      get lang(){ return this._lang; },
+      set lang(value){ this._lang = value; },
+      t(key){ return (dict[this.lang] && dict[this.lang][key]) || key; },
       apply(){
+        document.documentElement.lang = this.lang;
         document.querySelectorAll('[data-i18n]').forEach(el=>{
           const key = el.getAttribute('data-i18n');
-          el.textContent = i18n.t(key);
+          if(!key) return;
+          if(key === 'clear') {
+            el.innerHTML = `<span>${this.t('clear')}</span>`;
+            return;
+          }
+          el.textContent = this.t(key);
         });
-        // update placeholders
-        document.getElementById('message').setAttribute('placeholder', i18n.lang==='ru' ? 'Без ФИО, телефонов и адресов' : 'No names, phone numbers or addresses');
-        // update theme label
-        applyTheme(theme === 'auto' ? (getSystemPref()==='dark'?'dark':'light') : theme);
+        document.getElementById('message').setAttribute('placeholder', this.lang==='ru' ? 'Без ФИО, телефонов и адресов' : 'No names, phone numbers or addresses');
+        langSel.value = this.lang;
       }
     };
-    const langSel = document.getElementById('lang');
-    langSel.value = i18n.lang;
-    langSel.addEventListener('change', ()=>{ i18n.lang = langSel.value; localStorage.setItem('gossip.lang', i18n.lang); i18n.apply(); });
+
+    const storedLang = localStorage.getItem(LANG_KEY);
+    const initialLang = dict[storedLang] ? storedLang : DEFAULT_LANG;
+    i18n.lang = initialLang;
+    langSel.value = initialLang;
+    langSel.addEventListener('change', ()=>{
+      i18n.lang = langSel.value;
+      localStorage.setItem(LANG_KEY, i18n.lang);
+      i18n.apply();
+    });
 
     // ===== FORM LOGIC =====
     const form = document.getElementById('form');
