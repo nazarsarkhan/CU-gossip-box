@@ -11,36 +11,137 @@
     /* THEME TOKENS */
     :root {
       --radius: 16px;
-      --shadow: 0 10px 30px rgba(0,0,0,.15);
+      --shadow: 0 14px 36px rgba(16,33,59,.14);
 
       /* Light defaults */
-      --bg: #f7f7fb;
+      --bg: #f2f6fb;
       --card: #ffffff;
-      --text: #0f172a;
-      --muted: #687083;
-      --border: #e6e8ef;
-      --acc: #6842ff;
-      --acc-2: #16a34a;
+      --text: #13223d;
+      --muted: #5c6b86;
+      --border: #d9e1ef;
+      --acc: #008ce2;
+      --acc-2: #db4e3d;
+      --glass: rgba(255,255,255,.76);
     }
     /* Dark theme overrides */
     .theme-dark {
-      --bg: #0b0c10;
-      --card: #111318;
-      --text: #e5e7eb;
-      --muted: #9095a1;
-      --border: #1f232d;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --acc: #7c5cff;
-      --acc-2: #22c55e;
+      --bg: #0f1628;
+      --card: #141d33;
+      --text: #f1f5ff;
+      --muted: #97a7c9;
+      --border: #1f2a44;
+      --shadow: 0 18px 42px rgba(0,0,0,.45);
+      --acc: #3aa9ff;
+      --acc-2: #ff7a66;
+      --glass: rgba(20,29,51,.82);
     }
 
     * { box-sizing: border-box; }
     html, body { height: 100%; }
     body {
       margin: 0; padding: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: var(--bg);
+      background: radial-gradient(circle at 20% -10%, rgba(0,140,226,.16), transparent 45%),
+                  radial-gradient(circle at 85% 10%, rgba(219,78,61,.12), transparent 42%),
+                  var(--bg);
       color: var(--text);
       display: grid; place-items: center;
+      min-height: 100vh;
+    }
+
+    .floating-controls {
+      position: fixed;
+      top: 22px;
+      right: 24px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: var(--glass);
+      border: 1px solid rgba(217,225,239,.7);
+      border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+      border-radius: 999px;
+      padding: 6px 12px;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 12px 30px rgba(19,34,61,.12);
+      z-index: 10;
+    }
+    .floating-controls .control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .floating-controls .control-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(0,140,226,.12);
+      background: color-mix(in srgb, var(--acc) 18%, transparent);
+      color: var(--acc);
+      font-size: 14px;
+    }
+    .theme-dark .floating-controls .control-icon {
+      background: rgba(58,169,255,.26);
+      background: color-mix(in srgb, var(--acc) 32%, transparent);
+      color: #f6fbff;
+    }
+    .floating-controls select {
+      appearance:none;
+      border: none;
+      background: rgba(255,255,255,.92);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 8px 30px 8px 12px;
+      font: inherit;
+      cursor: pointer;
+      box-shadow: inset 0 0 0 1px rgba(217,225,239,.9);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 70%, transparent);
+      transition: box-shadow .18s ease, background .18s ease;
+      position: relative;
+    }
+    .floating-controls select:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px rgba(0,140,226,.45);
+    }
+    .floating-controls .select-wrap {
+      position: relative;
+    }
+    .floating-controls .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      width: 10px;
+      height: 6px;
+      margin-top: -3px;
+      background: currentColor;
+      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.75 6 6.25 11 1.75" stroke="%23000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>') center/contain no-repeat;
+      opacity: .6;
+      pointer-events: none;
+    }
+    .theme-dark .floating-controls select {
+      background: rgba(20,29,51,.92);
+      box-shadow: inset 0 0 0 1px rgba(151,167,201,.28);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, rgba(151,167,201,.7) 70%, transparent);
+    }
+    .theme-dark .floating-controls {
+      box-shadow: 0 14px 34px rgba(0,0,0,.45);
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     .container {
@@ -52,17 +153,11 @@
       overflow: hidden;
     }
 
-    header { padding: 22px 22px 12px; display:flex; align-items:center; gap:14px; justify-content:space-between; }
+    header { padding: 22px 22px 12px; display:flex; align-items:center; gap:14px; justify-content:flex-start; }
     .brand-left { display:flex; align-items:center; gap:12px; }
     .logo { width: 120px; height: auto; display:block; }
     .title { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: .2px; }
     .subtitle { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
-
-    .controls { display:flex; align-items:center; gap:10px; }
-    .select, .toggle {
-      appearance:none; border:1px solid var(--border); background: transparent; color: var(--text);
-      border-radius: 10px; padding: 8px 10px; font: inherit; cursor:pointer;
-    }
 
     form { padding: 16px 20px 24px; }
     .field { margin: 14px 0 0; }
@@ -85,9 +180,10 @@
     .actions { display: flex; gap: 10px; margin-top: 16px; align-items: center; }
     button[type="submit"] {
       appearance: none; border: none; cursor: pointer; user-select: none;
-      background: linear-gradient(135deg, var(--acc), #5b32ff);
-      color: white; font-weight: 600; letter-spacing: .2px; padding: 12px 16px; border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(124,92,255,.25);
+      background: linear-gradient(135deg, var(--acc), rgba(0,140,226,.82));
+      background: linear-gradient(135deg, var(--acc), color-mix(in srgb, var(--acc-2) 35%, var(--acc)));
+      color: white; font-weight: 600; letter-spacing: .2px; padding: 12px 18px; border-radius: 12px;
+      box-shadow: 0 10px 24px rgba(0,140,226,.26);
       transition: transform .05s ease, filter .2s ease, opacity .2s ease;
     }
     button[disabled] { opacity: .6; cursor: not-allowed; box-shadow: none; }
@@ -113,10 +209,35 @@
       form { padding: 12px 14px 18px; }
       footer { padding: 14px; }
       .logo { width: 96px; }
+      .floating-controls { right: 12px; left: 12px; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+      .floating-controls .control { width: 100%; justify-content: space-between; }
     }
   </style>
 </head>
 <body>
+  <div class="floating-controls" role="toolbar" aria-label="Site controls">
+    <label class="control" for="lang">
+      <span class="control-icon" aria-hidden="true">🌐</span>
+      <span class="visually-hidden" data-i18n="langLabel">Язык</span>
+      <div class="select-wrap">
+        <select id="lang" aria-label="Language">
+          <option value="ru" data-i18n="langRu">Русский</option>
+          <option value="en" data-i18n="langEn">English</option>
+        </select>
+      </div>
+    </label>
+    <label class="control" for="themeSel">
+      <span class="control-icon" id="themeIcon" aria-hidden="true">🌓</span>
+      <span class="visually-hidden" data-i18n="themeLabel">Тема</span>
+      <div class="select-wrap">
+        <select id="themeSel" aria-label="Theme">
+          <option value="auto" data-i18n="themeAuto">Авто</option>
+          <option value="light" data-i18n="themeLight">Светлая</option>
+          <option value="dark" data-i18n="themeDark">Тёмная</option>
+        </select>
+      </div>
+    </label>
+  </div>
   <div class="container" role="region" aria-labelledby="title">
     <header>
       <div class="brand-left">
@@ -125,13 +246,6 @@
           <h1 class="title" id="title" data-i18n="title">Анонимная отправка</h1>
           <p class="subtitle" data-i18n="subtitle">Напишите историю. Модераторы проверят и опубликуют в канале.</p>
         </div>
-      </div>
-      <div class="controls">
-        <select id="lang" class="select" aria-label="Language">
-          <option value="ru">Рус</option>
-          <option value="en">Eng</option>
-        </select>
-        <button id="themeBtn" class="toggle" type="button" aria-label="Toggle theme" data-i18n="theme">Тема: авто</button>
       </div>
     </header>
 
@@ -171,22 +285,35 @@
   <script>
     // ===== THEME =====
     const root = document.documentElement;
-    const themeBtn = document.getElementById('themeBtn');
     const THEME_KEY = 'gossip.theme';
-    function applyTheme(mode){
-      root.classList.remove('theme-dark');
-      if(mode === 'dark') root.classList.add('theme-dark');
-      root.dataset.mode = mode;
-      themeBtn.textContent = i18n.t('theme') + ': ' + i18n.t(mode);
+    const themeSel = document.getElementById('themeSel');
+    const themeIcon = document.getElementById('themeIcon');
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    function resolveTheme(mode){
+      return mode === 'auto' ? (mediaQuery.matches ? 'dark' : 'light') : mode;
     }
-    function getSystemPref(){ return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    function applyTheme(mode){
+      const resolved = resolveTheme(mode);
+      root.classList.toggle('theme-dark', resolved === 'dark');
+      root.dataset.mode = resolved;
+      themeSel.value = mode;
+      if(themeIcon){
+        themeIcon.textContent = mode === 'auto' ? '🌓' : (resolved === 'dark' ? '🌙' : '☀️');
+      }
+    }
     let theme = localStorage.getItem(THEME_KEY) || 'auto';
-    applyTheme(theme === 'auto' ? (getSystemPref()==='dark'?'dark':'light') : theme);
-    themeBtn.addEventListener('click', ()=>{
-      const next = theme === 'auto' ? 'light' : theme === 'light' ? 'dark' : 'auto';
-      theme = next; localStorage.setItem(THEME_KEY, next);
-      applyTheme(next === 'auto' ? (getSystemPref()==='dark'?'dark':'light') : next);
+    applyTheme(theme);
+    themeSel.addEventListener('change', () => {
+      theme = themeSel.value;
+      localStorage.setItem(THEME_KEY, theme);
+      applyTheme(theme);
     });
+    const syncSystemTheme = () => { if(theme === 'auto') applyTheme('auto'); };
+    if(mediaQuery.addEventListener){
+      mediaQuery.addEventListener('change', syncSystemTheme);
+    } else if(mediaQuery.addListener){
+      mediaQuery.addListener(syncSystemTheme);
+    }
 
     // ===== I18N =====
     const dict = {
@@ -203,7 +330,8 @@
         channel: 'Наш канал',
         faqHint: 'Добавьте страницу с правилами/FAQ',
         channelHint: 'Добавьте ссылку на телеграм‑канал',
-        theme: 'Тема', auto:'авто', light:'светлая', dark:'тёмная',
+        theme: 'Тема', themeLabel:'Тема', themeAuto:'Авто', themeLight:'Светлая', themeDark:'Тёмная',
+        langLabel:'Язык', langRu:'Русский', langEn:'English',
         toastPII: 'Похоже, есть личные данные (телефон/почта/ссылки). Уберите их и попробуйте снова.',
         toastOk: 'Готово! Заявка отправлена на модерацию.',
         toastErr: 'Не удалось отправить. Попробуйте позже.'
@@ -221,7 +349,8 @@
         channel: 'Our channel',
         faqHint: 'Add a Rules/FAQ page',
         channelHint: 'Add a link to your Telegram channel',
-        theme: 'Theme', auto:'auto', light:'light', dark:'dark',
+        theme: 'Theme', themeLabel:'Theme', themeAuto:'Auto', themeLight:'Light', themeDark:'Dark',
+        langLabel:'Language', langRu:'Russian', langEn:'English',
         toastPII: 'It looks like there is personal data (phone/email/links). Remove it and try again.',
         toastOk: 'Done! Your submission was sent for moderation.',
         toastErr: 'Failed to send. Try again later.'
@@ -231,14 +360,16 @@
       lang: localStorage.getItem('gossip.lang') || (navigator.language?.startsWith('ru')?'ru':'en'),
       t(k){ return (dict[this.lang] && dict[this.lang][k]) || k; },
       apply(){
+        document.documentElement.lang = i18n.lang;
         document.querySelectorAll('[data-i18n]').forEach(el=>{
           const key = el.getAttribute('data-i18n');
           el.textContent = i18n.t(key);
         });
         // update placeholders
         document.getElementById('message').setAttribute('placeholder', i18n.lang==='ru' ? 'Без ФИО, телефонов и адресов' : 'No names, phone numbers or addresses');
-        // update theme label
-        applyTheme(theme === 'auto' ? (getSystemPref()==='dark'?'dark':'light') : theme);
+        // sync selects
+        langSel.value = i18n.lang;
+        applyTheme(theme);
       }
     };
     const langSel = document.getElementById('lang');
