@@ -292,14 +292,7 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script>
-    (() => {
-    const VER = '2025-09-28-1';
-    if (localStorage.getItem('gossip.defaults.ver') !== VER) {
-      localStorage.setItem('gossip.lang', 'en');   // дефолтный язык = EN
-      localStorage.setItem('gossip.theme', 'auto'); // дефолтная тема = Auto
-      localStorage.setItem('gossip.defaults.ver', VER);
-    }
-    })();
+    
     // ===== THEME =====
     const root = document.documentElement;
     const THEME_KEY = 'gossip.theme';
