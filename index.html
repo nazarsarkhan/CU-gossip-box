@@ -55,117 +55,173 @@
       transition: background .3s ease;
     }
 
-    .floating-controls {
-      position: sticky;
-      top: clamp(12px, 3vh, 28px);
-      align-self: flex-end;
-      margin-inline: auto 0;
+    .header-controls {
+      margin-left: auto;
       display: flex;
-      flex-wrap: nowrap;
-      gap: 12px;
       align-items: center;
-      justify-content: flex-end;
-      background: var(--glass);
-      border: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
-      border-radius: 18px;
-      padding: 10px 16px;
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      box-shadow: 0 12px 30px rgba(19,34,61,.12);
-      z-index: 5;
-      width: fit-content;
-      max-width: 100%;
-      isolation: isolate;
-      overflow: hidden;
+      gap: clamp(12px, 3vw, 24px);
+      position: relative;
     }
-    .floating-controls .control {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .lang-switch {
+      position: relative;
+    }
+    .lang-current {
+      appearance: none;
+      border: none;
+      background: linear-gradient(135deg, rgba(255,255,255,.96), color-mix(in srgb, var(--border) 12%, rgba(255,255,255,.96)));
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 38px 10px 18px;
+      font: inherit;
       font-size: 13px;
-      color: var(--muted);
-      white-space: nowrap;
-      min-width: 0;
-      padding: 4px 0;
-      flex: 0 1 auto;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 14px 30px rgba(19,34,61,.16);
+      transition: transform .15s ease, box-shadow .18s ease, background .18s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      min-width: 120px;
+      justify-content: center;
     }
-    .floating-controls .control-icon {
+    .lang-current::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      width: 10px;
+      height: 6px;
+      margin-top: -3px;
+      background: currentColor;
+      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.75 6 6.25 11 1.75" stroke="%23000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>') center/contain no-repeat;
+      opacity: .6;
+      transition: opacity .18s ease, transform .18s ease;
+      pointer-events: none;
+    }
+    .lang-switch[data-open="true"] .lang-current::after {
+      opacity: .9;
+      transform: translateY(-2px) rotate(180deg);
+    }
+    .lang-current:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 34px rgba(19,34,61,.18);
+    }
+    .theme-dark .lang-current {
+      background: linear-gradient(135deg, rgba(20,29,51,.96), color-mix(in srgb, rgba(58,169,255,.18) 18%, rgba(20,29,51,.96)));
+      box-shadow: 0 18px 36px rgba(0,0,0,.45);
+    }
+    .lang-menu {
+      list-style: none;
+      margin: 8px 0 0;
+      padding: 8px 0;
+      position: absolute;
+      top: calc(100% + 4px);
+      right: 0;
+      min-width: 120px;
+      background: var(--card);
+      border: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
+      border-radius: 14px;
+      box-shadow: 0 20px 40px rgba(19,34,61,.2);
+      display: grid;
+      gap: 2px;
+      transition: opacity .18s ease, transform .18s ease, visibility .18s ease;
+      z-index: 10;
+    }
+    .lang-switch[data-open="false"] .lang-menu {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-6px);
+      pointer-events: none;
+    }
+    .lang-switch[data-open="true"] .lang-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .lang-menu button {
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: background .15s ease, color .15s ease;
+      display: block;
+    }
+    .lang-menu button[aria-selected="true"] {
+      background: color-mix(in srgb, var(--acc) 10%, transparent);
+      color: var(--acc);
+    }
+    .lang-menu button:hover,
+    .lang-menu button:focus-visible {
+      background: color-mix(in srgb, var(--acc) 12%, transparent);
+      outline: none;
+    }
+    .theme-dark .lang-menu {
+      box-shadow: 0 22px 44px rgba(0,0,0,.48);
+    }
+    .theme-switch { position: relative; }
+    .theme-toggle-label {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: color-mix(in srgb, var(--acc) 18%, transparent);
-      color: var(--acc);
-      font-size: 16px;
-      flex-shrink: 0;
-    }
-    .theme-dark .floating-controls .control-icon {
-      background: color-mix(in srgb, var(--acc) 32%, transparent);
-      color: #f6fbff;
-    }
-    .floating-controls .control-body { display:flex; flex-direction:row; align-items:center; gap:10px; min-width:0; }
-    .floating-controls .control-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .05em;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-align: left;
-      white-space: nowrap;
-    }
-    .floating-controls select {
-      appearance:none;
-      border: none;
-      background: linear-gradient(135deg, color-mix(in srgb, rgba(255,255,255,.94) 88%, var(--acc) 12%), rgba(255,255,255,.94));
-      color: var(--text);
-      border-radius: 12px;
-      padding: 8px 34px 8px 14px;
-      font: inherit;
-      font-size: 13px;
-      font-weight: 600;
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+      background: linear-gradient(135deg, color-mix(in srgb, rgba(255,255,255,.96) 88%, var(--acc) 12%), rgba(255,255,255,.96));
+      box-shadow: 0 14px 30px rgba(19,34,61,.14);
       cursor: pointer;
-      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 70%, transparent);
-      transition: box-shadow .18s ease, background .18s ease, color .18s ease, transform .18s ease;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .theme-toggle-input:checked + .theme-toggle-label {
+      background: linear-gradient(135deg, color-mix(in srgb, rgba(0,140,226,.18) 30%, rgba(255,255,255,.94)), rgba(255,255,255,.94));
+      border-color: color-mix(in srgb, var(--acc) 45%, transparent);
+    }
+    .theme-toggle-input:focus-visible + .theme-toggle-label {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--acc) 24%, transparent), 0 16px 32px rgba(19,34,61,.18);
+    }
+    .theme-toggle-label:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 36px rgba(19,34,61,.18);
+    }
+    .theme-dark .theme-toggle-label {
+      background: linear-gradient(135deg, rgba(20,29,51,.94), color-mix(in srgb, rgba(58,169,255,.2) 18%, rgba(20,29,51,.94)));
+      box-shadow: 0 18px 38px rgba(0,0,0,.5);
+      border-color: color-mix(in srgb, rgba(31,42,68,.9) 70%, transparent);
+    }
+    .theme-dark .theme-toggle-input:checked + .theme-toggle-label {
+      background: linear-gradient(135deg, rgba(20,29,51,.94), color-mix(in srgb, rgba(58,169,255,.4) 40%, rgba(20,29,51,.94)));
+      border-color: color-mix(in srgb, rgba(58,169,255,.6) 50%, transparent);
+    }
+    .theme-toggle-visual {
       position: relative;
-      text-align: center;
-      text-align-last: center;
-      min-height: 36px;
-      min-width: 140px;
-      max-width: 200px;
-      display: block;
-      line-height: 1.15;
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
     }
-    .floating-controls select:hover {
-      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--acc) 30%, var(--border));
-      background: linear-gradient(135deg, color-mix(in srgb, rgba(255,255,255,.94) 78%, var(--acc) 22%), rgba(255,255,255,.94));
-      transform: translateY(-1px);
+    .theme-icon {
+      grid-area: 1 / 1;
+      opacity: 0;
+      transform: scale(.8);
+      transition: opacity .18s ease, transform .18s ease;
     }
-    .floating-controls select:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px rgba(0,140,226,.45);
-      transform: translateY(-1px);
+    .theme-toggle-input:not(:checked) + .theme-toggle-label .theme-icon.sun,
+    .theme-toggle-input:checked + .theme-toggle-label .theme-icon.moon {
+      opacity: 1;
+      transform: scale(1);
     }
-    .floating-controls .select-wrap { position: relative; color: var(--muted); flex: 0 0 auto; }
-    .theme-dark .floating-controls .select-wrap { color: rgba(246,251,255,.7); }
-    .floating-controls .select-wrap::after {
-      content: '';
-      position: absolute; right: 14px; top: 50%; width: 10px; height: 6px; margin-top: -3px; background: currentColor;
-      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.75 6 6.25 11 1.75" stroke="%23000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>') center/contain no-repeat;
-      opacity: .6; pointer-events: none; transition: opacity .18s ease, transform .18s ease;
-    }
-    .floating-controls .select-wrap:focus-within::after { opacity: .9; transform: translateY(-2px); }
-    .floating-controls select option { background: var(--card); color: var(--text); font-weight: 600; padding: 8px 12px; text-align: center; }
-    .theme-dark .floating-controls select {
-      background: linear-gradient(135deg, color-mix(in srgb, rgba(20,29,51,.92) 88%, rgba(58,169,255,.16) 12%), rgba(20,29,51,.92));
-      box-shadow: inset 0 0 0 1px color-mix(in srgb, rgba(151,167,201,.7) 70%, transparent);
-    }
-    .theme-dark .floating-controls select:hover {
-      background: linear-gradient(135deg, color-mix(in srgb, rgba(20,29,51,.92) 74%, rgba(58,169,255,.26) 26%), rgba(20,29,51,.92));
-    }
-    .theme-dark .floating-controls select option { background: rgba(20,29,51,.92); color: var(--text); }
-    .theme-dark .floating-controls { box-shadow: 0 14px 34px rgba(0,0,0,.45); }
 
     .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
@@ -230,50 +286,22 @@
 
     @media (max-width: 900px) {
       body { align-items: stretch; }
-      .floating-controls { margin-inline: 0; align-self: stretch; max-width: 100%; }
+      header { flex-direction: column; align-items: flex-start; gap: 18px; }
+      .header-controls { width: 100%; justify-content: space-between; }
     }
     @media (max-width: 640px) {
       body { padding: clamp(16px, 5vh, 32px) clamp(12px, 5vw, 20px); }
-      .floating-controls { position: static; top: auto; gap: 14px; border-radius: 20px; }
-      .floating-controls { width: 100%; flex-wrap: wrap; justify-content: center; padding: 14px 18px; }
-      .floating-controls .control { flex: 1 1 100%; white-space: normal; padding: 6px 0; }
-      .floating-controls .control-body { flex-direction: column; align-items: flex-start; gap: 6px; }
-      .floating-controls .select-wrap { width: 100%; }
-      .floating-controls select { width: 100%; min-height: 44px; padding: 11px 40px 11px 16px; }
+      .header-controls { flex-direction: column; align-items: stretch; gap: 14px; }
+      .lang-switch { width: 100%; }
+      .lang-current { width: 100%; }
+      .lang-menu { width: 100%; right: 0; }
+      .theme-toggle-label { align-self: flex-start; }
       form { padding: 0 16px 24px; }
       footer { padding: 18px 16px 22px; flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
-  <div class="floating-controls" role="toolbar" aria-label="Site controls">
-    <div class="control">
-      <span class="control-icon" aria-hidden="true">🌐</span>
-      <div class="control-body">
-        <span class="control-label" id="langLabel" data-i18n="langLabel">Language</span>
-        <div class="select-wrap">
-          <select id="lang" aria-labelledby="langLabel" aria-label="Language">
-            <option value="en" data-i18n="langEn">English</option>
-            <option value="ru" data-i18n="langRu">Русский</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    <div class="control">
-      <span class="control-icon" id="themeIcon" aria-hidden="true">🌓</span>
-      <div class="control-body">
-        <span class="control-label" id="themeLabel" data-i18n="themeLabel">Theme</span>
-        <div class="select-wrap">
-          <select id="themeSel" aria-labelledby="themeLabel" aria-label="Theme">
-            <option value="auto" data-i18n="themeAuto">Auto</option>
-            <option value="light" data-i18n="themeLight">Light</option>
-            <option value="dark" data-i18n="themeDark">Dark</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="container" role="region" aria-labelledby="title">
     <header>
       <div class="brand-left">
@@ -281,6 +309,28 @@
         <div>
           <h1 class="title" id="title" data-i18n="title">Anonymous submission</h1>
           <p class="subtitle" data-i18n="subtitle">Write your story. Moderators will review it before publishing.</p>
+        </div>
+      </div>
+      <div class="header-controls">
+        <div class="lang-switch" data-open="false">
+          <span class="visually-hidden" id="langLabel" data-i18n="langLabel">Language</span>
+          <button id="langButton" class="lang-current" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="langLabel langButtonText">
+            <span id="langButtonText">ENG</span>
+          </button>
+          <ul id="langMenu" class="lang-menu" role="listbox" aria-labelledby="langLabel">
+            <li><button type="button" data-lang="en" data-i18n="langShortEn" role="option" aria-selected="false">ENG</button></li>
+            <li><button type="button" data-lang="ru" data-i18n="langShortRu" role="option" aria-selected="false">RUS</button></li>
+          </ul>
+        </div>
+        <div class="theme-switch">
+          <input class="visually-hidden theme-toggle-input" type="checkbox" id="themeToggle" aria-labelledby="themeLabel" />
+          <label class="theme-toggle-label" for="themeToggle">
+            <span class="visually-hidden" id="themeLabel" data-i18n="themeLabel">Theme</span>
+            <span class="theme-toggle-visual" aria-hidden="true">
+              <span class="theme-icon sun">☀️</span>
+              <span class="theme-icon moon">🌙</span>
+            </span>
+          </label>
         </div>
       </div>
     </header>
@@ -323,34 +373,41 @@
     // ===== THEME =====
     const root = document.documentElement;
     const THEME_KEY = 'gossip.theme';
-    const themeSel = document.getElementById('themeSel');
-    const themeIcon = document.getElementById('themeIcon');
+    const themeToggle = document.getElementById('themeToggle');
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-    /** Resolve requested mode (auto/light/dark) to an actual theme. */
-    const resolveTheme = (mode) => mode === 'auto' ? (mediaQuery.matches ? 'dark' : 'light') : mode;
+    let userSelectedTheme = false;
 
-    /** Apply a theme visually and keep the select/icon in sync. */
     const applyTheme = (mode) => {
-      const resolved = resolveTheme(mode);
+      const resolved = mode === 'dark' ? 'dark' : 'light';
       root.classList.toggle('theme-dark', resolved === 'dark');
       root.dataset.mode = resolved;
-      root.setAttribute('data-theme', mode);
+      root.setAttribute('data-theme', resolved);
       root.setAttribute('data-theme-resolved', resolved);
-      if(themeSel.value !== mode){ themeSel.value = mode; }
-      if(themeIcon){ themeIcon.textContent = mode === 'auto' ? '🌓' : (resolved === 'dark' ? '🌙' : '☀️'); }
+      if(themeToggle.checked !== (resolved === 'dark')){
+        themeToggle.checked = resolved === 'dark';
+      }
     };
 
-    let theme = localStorage.getItem(THEME_KEY) || 'auto';
-    applyTheme(theme);
+    const storedTheme = localStorage.getItem(THEME_KEY);
+    const initialTheme = storedTheme === 'dark' || storedTheme === 'light'
+      ? storedTheme
+      : (mediaQuery.matches ? 'dark' : 'light');
+    userSelectedTheme = storedTheme === 'dark' || storedTheme === 'light';
+    applyTheme(initialTheme);
 
-    themeSel.addEventListener('change', () => {
-      theme = themeSel.value;
-      localStorage.setItem(THEME_KEY, theme);
-      applyTheme(theme);
+    themeToggle.addEventListener('change', () => {
+      const mode = themeToggle.checked ? 'dark' : 'light';
+      userSelectedTheme = true;
+      localStorage.setItem(THEME_KEY, mode);
+      applyTheme(mode);
     });
 
-    const syncSystemTheme = () => { if(theme === 'auto') applyTheme('auto'); };
+    const syncSystemTheme = () => {
+      if(!userSelectedTheme){
+        applyTheme(mediaQuery.matches ? 'dark' : 'light');
+      }
+    };
     if(mediaQuery.addEventListener){
       mediaQuery.addEventListener('change', syncSystemTheme);
     } else if(mediaQuery.addListener){
@@ -359,21 +416,19 @@
 
     // ===== I18N =====
     const dict = {
-      en: { title:'Anonymous submission', subtitle:'Write your story. Moderators will review it and post to the channel.', labelMessage:'Message text', rules:'By sending, you confirm you do not include personal data.', consent:'I agree to the rules and understand my message goes to moderation and can be rejected.', send:'Send to moderation', clear:'Clear form', note:'Minimum 10 characters. Submissions with personal data will be rejected.', rulesLink:'Rules', channel:'Our channel', faqHint:'Add a Rules/FAQ page', channelHint:'Add a link to your Telegram channel', theme:'Theme', themeLabel:'Theme', themeAuto:'Auto', themeLight:'Light', themeDark:'Dark', langLabel:'Language', langRu:'Russian', langEn:'English', toastPII:'It looks like there is personal data (phone/email/links). Remove it and try again.', toastOk:'Done! Your submission was sent for moderation.', toastErr:'Failed to send. Try again later.' },
-      ru: { title:'Анонимная отправка', subtitle:'Напишите историю. Модераторы проверят и опубликуют в канале.', labelMessage:'Текст сообщения', rules:'Отправляя, вы подтверждаете, что не публикуете персональные данные.', consent:'Я согласен(на) с правилами и понимаю, что сообщение пойдёт на модерацию и может быть отклонено.', send:'Отправить на модерацию', clear:'Очистить форму', note:'Минимум 10 символов. Сообщения с персональными данными будут отклонены.', rulesLink:'Правила', channel:'Наш канал', faqHint:'Добавьте страницу с правилами/FAQ', channelHint:'Добавьте ссылку на телеграм‑канал', theme:'Тема', themeLabel:'Тема', themeAuto:'Авто', themeLight:'Светлая', themeDark:'Тёмная', langLabel:'Язык', langRu:'Русский', langEn:'English', toastPII:'Похоже, есть личные данные (телефон/почта/ссылки). Уберите их и попробуйте снова.', toastOk:'Готово! Заявка отправлена на модерацию.', toastErr:'Не удалось отправить. Попробуйте позже.' }
+      en: { title:'Anonymous submission', subtitle:'Write your story. Moderators will review it and post to the channel.', labelMessage:'Message text', rules:'By sending, you confirm you do not include personal data.', consent:'I agree to the rules and understand my message goes to moderation and can be rejected.', send:'Send to moderation', clear:'Clear form', note:'Minimum 10 characters. Submissions with personal data will be rejected.', rulesLink:'Rules', channel:'Our channel', faqHint:'Add a Rules/FAQ page', channelHint:'Add a link to your Telegram channel', theme:'Theme', themeLabel:'Theme', themeLight:'Light', themeDark:'Dark', langLabel:'Language', langRu:'Russian', langEn:'English', langShortEn:'ENG', langShortRu:'RUS', toastPII:'It looks like there is personal data (phone/email/links). Remove it and try again.', toastOk:'Done! Your submission was sent for moderation.', toastErr:'Failed to send. Try again later.' },
+      ru: { title:'Анонимная отправка', subtitle:'Напишите историю. Модераторы проверят и опубликуют в канале.', labelMessage:'Текст сообщения', rules:'Отправляя, вы подтверждаете, что не публикуете персональные данные.', consent:'Я согласен(на) с правилами и понимаю, что сообщение пойдёт на модерацию и может быть отклонено.', send:'Отправить на модерацию', clear:'Очистить форму', note:'Минимум 10 символов. Сообщения с персональными данными будут отклонены.', rulesLink:'Правила', channel:'Наш канал', faqHint:'Добавьте страницу с правилами/FAQ', channelHint:'Добавьте ссылку на телеграм‑канал', theme:'Тема', themeLabel:'Тема', themeLight:'Светлая', themeDark:'Тёмная', langLabel:'Язык', langRu:'Русский', langEn:'English', langShortEn:'ENG', langShortRu:'РУС', toastPII:'Похоже, есть личные данные (телефон/почта/ссылки). Уберите их и попробуйте снова.', toastOk:'Готово! Заявка отправлена на модерацию.', toastErr:'Не удалось отправить. Попробуйте позже.' }
     };
     const LANG_KEY = 'gossip.lang';
     const DEFAULT_LANG = 'en';
-    const langSel = document.getElementById('lang');
-    const themeOptions = {
-      auto: themeSel.querySelector('[value="auto"]'),
-      light: themeSel.querySelector('[value="light"]'),
-      dark: themeSel.querySelector('[value="dark"]'),
-    };
-    const langOptions = {
-      en: langSel.querySelector('[value="en"]'),
-      ru: langSel.querySelector('[value="ru"]'),
-    };
+    const langSwitch = document.querySelector('.lang-switch');
+    const langButton = document.getElementById('langButton');
+    const langButtonText = document.getElementById('langButtonText');
+    const langMenu = document.getElementById('langMenu');
+    const langItems = Array.from(langMenu.querySelectorAll('button[data-lang]'));
+    const langShortKey = { en: 'langShortEn', ru: 'langShortRu' };
+
+    const themeToggleLabel = document.querySelector('.theme-toggle-label');
 
     const i18n = {
       get lang(){ return this._lang; }, set lang(v){ this._lang = v; },
@@ -387,22 +442,122 @@
           el.textContent = this.t(key);
         });
         document.getElementById('message').setAttribute('placeholder', this.lang==='ru' ? 'Без ФИО, телефонов и адресов' : 'No names, phone numbers or addresses');
-        // update select option texts
-        langOptions.en.textContent = this.t('langEn');
-        langOptions.ru.textContent = this.t('langRu');
-        themeOptions.auto.textContent = this.t('themeAuto');
-        themeOptions.light.textContent = this.t('themeLight');
-        themeOptions.dark.textContent = this.t('themeDark');
+        langButtonText.textContent = this.t(langShortKey[this.lang]);
+        langButton.setAttribute('aria-label', this.t('langLabel'));
+        langButton.setAttribute('title', this.t('langLabel'));
+        langItems.forEach(btn => {
+          const key = btn.getAttribute('data-i18n');
+          btn.textContent = this.t(key);
+          btn.setAttribute('aria-selected', btn.dataset.lang === this.lang ? 'true' : 'false');
+        });
+        themeToggle.setAttribute('aria-label', this.t('themeLabel'));
+        if(themeToggleLabel){
+          themeToggleLabel.setAttribute('title', this.t('themeLabel'));
+        }
       }
     };
     const storedLang = localStorage.getItem(LANG_KEY);
     const initialLang = dict[storedLang] ? storedLang : DEFAULT_LANG;
-    i18n.lang = initialLang; langSel.value = initialLang; i18n.apply();
-    langSel.addEventListener('change', ()=>{
-      i18n.lang = langSel.value;
+
+    const closeLangMenu = (focusButton = false) => {
+      langSwitch.dataset.open = 'false';
+      langButton.setAttribute('aria-expanded', 'false');
+      if(focusButton){
+        langButton.focus();
+      }
+    };
+
+    const openLangMenu = () => {
+      langSwitch.dataset.open = 'true';
+      langButton.setAttribute('aria-expanded', 'true');
+      const current = langItems.find(btn => btn.dataset.lang === i18n.lang) || langItems[0];
+      current.focus();
+    };
+
+    langButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      if(langSwitch.dataset.open === 'true'){
+        closeLangMenu();
+      } else {
+        openLangMenu();
+      }
+    });
+
+    langButton.addEventListener('keydown', (event) => {
+      if(event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' '){
+        event.preventDefault();
+        if(langSwitch.dataset.open !== 'true'){
+          openLangMenu();
+        }
+      } else if(event.key === 'Escape'){
+        closeLangMenu(true);
+      }
+    });
+
+    const moveLangFocus = (currentBtn, direction) => {
+      const currentIndex = langItems.indexOf(currentBtn);
+      if(currentIndex === -1) return;
+      const nextIndex = (currentIndex + direction + langItems.length) % langItems.length;
+      langItems[nextIndex].focus();
+    };
+
+    langItems.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lang = btn.dataset.lang;
+        if(!dict[lang]) return;
+        setLanguage(lang);
+        closeLangMenu(true);
+      });
+      btn.addEventListener('keydown', (event) => {
+        if(event.key === 'ArrowDown'){
+          event.preventDefault();
+          moveLangFocus(btn, 1);
+        } else if(event.key === 'ArrowUp'){
+          event.preventDefault();
+          moveLangFocus(btn, -1);
+        } else if(event.key === 'Home'){
+          event.preventDefault();
+          langItems[0].focus();
+        } else if(event.key === 'End'){
+          event.preventDefault();
+          langItems[langItems.length - 1].focus();
+        } else if(event.key === 'Escape'){
+          event.preventDefault();
+          closeLangMenu(true);
+        }
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      if(!langSwitch.contains(event.target)){
+        closeLangMenu();
+      }
+    });
+
+    langButton.addEventListener('blur', () => {
+      if(langSwitch.dataset.open === 'true'){
+        requestAnimationFrame(() => {
+          if(!langSwitch.contains(document.activeElement)){
+            closeLangMenu();
+          }
+        });
+      }
+    });
+
+    langMenu.addEventListener('keydown', (event) => {
+      if(event.key === 'Tab'){
+        closeLangMenu();
+      }
+    });
+
+    const setLanguage = (lang) => {
+      if(!dict[lang]) return;
+      i18n.lang = lang;
       localStorage.setItem(LANG_KEY, i18n.lang);
       i18n.apply();
-    });
+    };
+
+    setLanguage(initialLang);
 
     // ===== FORM LOGIC =====
     const form = document.getElementById('form');
