@@ -37,7 +37,7 @@
     }
 
     * { box-sizing: border-box; }
-    html, body { height: 100%; }
+    html { min-height: 100%; }
     body {
       margin: 0;
       padding: clamp(18px, 6vh, 48px) clamp(16px, 4vw, 48px);
@@ -253,7 +253,7 @@
       border: 1px solid color-mix(in srgb, var(--border) 78%, transparent); border-radius: 14px; padding: 14px 16px; font: inherit; outline: none;
       transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
     }
-    textarea { resize: vertical; min-height: 140px; max-height: min(520px, 70vh); }
+    textarea { resize: vertical; min-height: 140px; max-height: none; }
     input[type="text"]:focus, textarea:focus { border-color: color-mix(in srgb, var(--acc) 80%, white 20%); box-shadow: 0 0 0 3px color-mix(in srgb, var(--acc) 18%, transparent); background: color-mix(in srgb, var(--card) 90%, rgba(255,255,255,.92)); }
 
     .row { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
